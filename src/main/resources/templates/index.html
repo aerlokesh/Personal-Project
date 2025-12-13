@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Amazon-like Store</title>
+    <title>Amazon.com. Spend less. Smile more.</title>
     <style>
         * {
             margin: 0;
@@ -13,27 +13,73 @@
         
         body {
             font-family: 'Amazon Ember', Arial, sans-serif;
-            background-color: #f3f3f3;
+            background-color: #EAEDED;
         }
         
-        header {
+        /* Top Header */
+        .top-header {
             background-color: #131921;
             color: white;
-            padding: 15px 20px;
+            padding: 8px 20px;
             display: flex;
             align-items: center;
-            justify-content: space-between;
+            gap: 15px;
         }
         
         .logo {
-            font-size: 24px;
+            font-size: 28px;
             font-weight: bold;
-            color: #ff9900;
+            color: white;
+            text-decoration: none;
+            padding: 8px 12px;
+            border: 1px solid transparent;
+            border-radius: 2px;
+        }
+        
+        .logo:hover {
+            border-color: white;
+        }
+        
+        .logo span {
+            color: #FF9900;
+        }
+        
+        .deliver-to {
+            display: flex;
+            align-items: center;
+            padding: 8px;
+            border: 1px solid transparent;
+            border-radius: 2px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+        
+        .deliver-to:hover {
+            border-color: white;
+        }
+        
+        .deliver-icon {
+            font-size: 18px;
+            margin-right: 5px;
+        }
+        
+        .search-section {
+            flex: 1;
+            display: flex;
+            max-width: 800px;
+        }
+        
+        .search-dropdown {
+            background: #f3f3f3;
+            border: none;
+            padding: 10px;
+            border-radius: 4px 0 0 4px;
+            font-size: 13px;
+            cursor: pointer;
         }
         
         .search-bar {
             flex: 1;
-            margin: 0 20px;
             display: flex;
         }
         
@@ -41,15 +87,86 @@
             flex: 1;
             padding: 10px;
             border: none;
-            border-radius: 4px 0 0 4px;
+            font-size: 14px;
         }
         
         .search-bar button {
-            padding: 10px 20px;
-            background-color: #febd69;
+            padding: 0 20px;
+            background-color: #FEBD69;
             border: none;
             border-radius: 0 4px 4px 0;
             cursor: pointer;
+            font-size: 18px;
+        }
+        
+        .search-bar button:hover {
+            background-color: #F3A847;
+        }
+        
+        .header-nav {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+        
+        .nav-item {
+            color: white;
+            text-decoration: none;
+            font-size: 13px;
+            padding: 8px;
+            border: 1px solid transparent;
+            border-radius: 2px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        
+        .nav-item:hover {
+            border-color: white;
+        }
+        
+        .nav-item-label {
+            font-size: 11px;
+            color: #ccc;
+        }
+        
+        .nav-item-main {
+            font-weight: bold;
+            font-size: 13px;
+        }
+        
+        .cart-icon {
+            position: relative;
+            font-size: 32px;
+        }
+        
+        /* Navigation Bar */
+        .nav-bar {
+            background-color: #232F3E;
+            padding: 8px 20px;
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            font-size: 14px;
+        }
+        
+        .nav-bar a {
+            color: white;
+            text-decoration: none;
+            padding: 8px 10px;
+            border-radius: 2px;
+        }
+        
+        .nav-bar a:hover {
+            border: 1px solid white;
+            padding: 7px 9px;
+        }
+        
+        .nav-all {
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 5px;
         }
         
         .user-info {
@@ -57,122 +174,98 @@
             font-size: 14px;
         }
         
-        .nav-dropdown {
-            position: relative;
-            display: inline-block;
-        }
-        
-        .nav-dropdown-content {
-            display: none;
-            position: absolute;
-            right: 0;
-            background-color: white;
-            min-width: 300px;
-            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
-            border-radius: 4px;
-            z-index: 1000;
-            margin-top: 10px;
-        }
-        
-        .nav-dropdown:hover .nav-dropdown-content {
-            display: block;
-        }
-        
-        .dropdown-header {
-            padding: 15px;
-            border-bottom: 1px solid #ddd;
-            font-weight: bold;
-            color: #131921;
+        /* Banner */
+        .banner {
+            background: linear-gradient(to bottom, #37475A 0%, #EAEDED 100%);
+            padding: 15px 20px;
+            text-align: center;
+            color: white;
             font-size: 14px;
         }
         
-        .dropdown-item {
-            padding: 12px 15px;
-            color: #131921;
-            text-decoration: none;
-            display: block;
-            border-bottom: 1px solid #f3f3f3;
-            font-size: 13px;
-        }
-        
-        .dropdown-item:hover {
-            background-color: #f3f3f3;
-        }
-        
-        .dropdown-item:last-child {
-            border-bottom: none;
-        }
-        
-        .dropdown-footer {
-            padding: 12px 15px;
-            background: #f7f7f7;
-            border-radius: 0 0 4px 4px;
-        }
-        
-        .dropdown-footer a {
-            color: #007185;
-            text-decoration: none;
-            font-size: 13px;
-            font-weight: 500;
-        }
-        
-        .dropdown-footer a:hover {
-            color: #C7511F;
-            text-decoration: underline;
-        }
-        
+        /* Container */
         .container {
-            max-width: 1400px;
+            max-width: 1500px;
             margin: 0 auto;
             padding: 20px;
         }
         
-        h1 {
-            color: #131921;
-            margin-bottom: 20px;
-            font-size: 28px;
+        .breadcrumb {
+            font-size: 12px;
+            color: #565959;
+            margin-bottom: 10px;
         }
         
+        .breadcrumb a {
+            color: #007185;
+            text-decoration: none;
+        }
+        
+        .breadcrumb a:hover {
+            color: #C7511F;
+            text-decoration: underline;
+        }
+        
+        h1 {
+            color: #0F1111;
+            margin-bottom: 15px;
+            font-size: 24px;
+            font-weight: 400;
+        }
+        
+        /* Products Grid */
         .products-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 20px;
-            margin-top: 20px;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
         }
         
         .product-card {
             background: white;
+            border: 1px solid #DDD;
             border-radius: 8px;
-            padding: 15px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            transition: transform 0.3s, box-shadow 0.3s;
+            padding: 20px 15px;
+            transition: box-shadow 0.2s, transform 0.2s;
             cursor: pointer;
+            display: flex;
+            flex-direction: column;
         }
         
         .product-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            transform: translateY(-2px);
         }
         
         .product-image {
             width: 100%;
-            height: 200px;
+            height: 220px;
             object-fit: contain;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
+        }
+        
+        .product-badge {
+            background-color: #CC0C39;
+            color: white;
+            font-size: 11px;
+            padding: 4px 8px;
+            border-radius: 2px;
+            display: inline-block;
+            margin-bottom: 8px;
+            font-weight: bold;
         }
         
         .product-category {
             font-size: 12px;
-            color: #007185;
-            text-transform: uppercase;
-            margin-bottom: 5px;
+            color: #565959;
+            margin-bottom: 6px;
         }
         
         .product-name {
-            font-size: 16px;
-            font-weight: 500;
-            color: #131921;
+            font-size: 14px;
+            color: #0F1111;
             margin-bottom: 8px;
+            line-height: 1.4;
             min-height: 40px;
             display: -webkit-box;
             -webkit-line-clamp: 2;
@@ -180,108 +273,246 @@
             overflow: hidden;
         }
         
-        .product-description {
-            font-size: 13px;
-            color: #565959;
-            margin-bottom: 10px;
-            min-height: 40px;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
+        .product-name:hover {
+            color: #C7511F;
+        }
+        
+        .product-rating {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-bottom: 8px;
+            font-size: 12px;
+        }
+        
+        .stars {
+            color: #FFA41C;
+        }
+        
+        .rating-count {
+            color: #007185;
+        }
+        
+        .rating-count:hover {
+            color: #C7511F;
+            text-decoration: underline;
+        }
+        
+        .product-price-section {
+            margin-bottom: 8px;
         }
         
         .product-price {
-            font-size: 24px;
+            font-size: 21px;
+            color: #0F1111;
+            margin-bottom: 2px;
+        }
+        
+        .price-symbol {
+            font-size: 12px;
+            vertical-align: top;
+            margin-right: 2px;
+        }
+        
+        .price-whole {
+            font-weight: 500;
+        }
+        
+        .price-decimal {
+            font-size: 12px;
+            vertical-align: top;
+        }
+        
+        .product-prime {
+            color: #007185;
+            font-size: 12px;
             font-weight: bold;
-            color: #B12704;
             margin-bottom: 5px;
         }
         
-        .product-asin {
-            font-size: 11px;
-            color: #888;
-            margin-bottom: 10px;
+        .product-delivery {
+            font-size: 12px;
+            color: #565959;
+            margin-bottom: 8px;
         }
         
         .product-stock {
             font-size: 12px;
             color: #007600;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
+            font-weight: 500;
+        }
+        
+        .product-asin {
+            font-size: 11px;
+            color: #888;
+            margin-bottom: 12px;
         }
         
         .buy-button {
             width: 100%;
-            padding: 10px;
-            background-color: #ff9900;
-            color: #131921;
-            border: none;
+            padding: 8px;
+            background-color: #FFD814;
+            color: #0F1111;
+            border: 1px solid #FCD200;
             border-radius: 8px;
-            font-size: 14px;
-            font-weight: bold;
+            font-size: 13px;
             cursor: pointer;
-            transition: background-color 0.3s;
+            transition: background-color 0.15s;
+            margin-top: auto;
         }
         
         .buy-button:hover {
-            background-color: #f39c12;
+            background-color: #F7CA00;
+            border-color: #F2C200;
         }
         
         .empty-state {
+            background: white;
             text-align: center;
             padding: 60px 20px;
             color: #565959;
+            border-radius: 8px;
+        }
+        
+        /* Footer */
+        .back-to-top {
+            background-color: #37475A;
+            color: white;
+            text-align: center;
+            padding: 15px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+        
+        .back-to-top:hover {
+            background-color: #485769;
         }
         
         footer {
-            background-color: #232f3e;
+            background-color: #232F3E;
             color: white;
+            padding: 40px 20px 20px;
+        }
+        
+        .footer-content {
+            max-width: 1500px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 30px;
+            padding-bottom: 30px;
+            border-bottom: 1px solid #3a4553;
+        }
+        
+        .footer-column h3 {
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .footer-column a {
+            display: block;
+            color: #DDD;
+            text-decoration: none;
+            font-size: 13px;
+            margin-bottom: 8px;
+        }
+        
+        .footer-column a:hover {
+            text-decoration: underline;
+        }
+        
+        .footer-bottom {
             text-align: center;
-            padding: 20px;
-            margin-top: 40px;
+            padding-top: 30px;
+            color: #DDD;
+            font-size: 12px;
+        }
+        
+        .footer-logo {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+        
+        .footer-logo span {
+            color: #FF9900;
         }
     </style>
 </head>
 <body>
-    <header>
-        <a href="/" class="logo" style="color: #ff9900; text-decoration: none;">amazone</a>
-        <div class="search-bar">
-            <input type="text" placeholder="Search products..." id="searchInput">
-            <button onclick="searchProducts()">Search</button>
+    <!-- Top Header -->
+    <div class="top-header">
+        <a href="/" class="logo">amazon<span>.com</span></a>
+        
+        <div class="deliver-to">
+            <span class="deliver-icon">📍</span>
+            <div>
+                <div style="font-size: 11px; color: #ccc;">Deliver to</div>
+                <div style="font-weight: bold;">Seattle 98101</div>
+            </div>
         </div>
-        <div class="nav-dropdown" style="margin-right: 20px;">
-            <a href="/orders" style="color: white; text-decoration: none;">
-                <div class="user-info" style="cursor: pointer;">
-                    📦 Returns<br>&nbsp;&nbsp;&nbsp;&nbsp;&amp; Orders
-                </div>
+        
+        <div class="search-section">
+            <select class="search-dropdown" id="categoryFilter">
+                <option value="">All</option>
+                <option value="Electronics">Electronics</option>
+                <option value="Books">Books</option>
+                <option value="Fashion">Fashion</option>
+                <option value="Home">Home</option>
+            </select>
+            <div class="search-bar">
+                <input type="text" placeholder="Search Amazon" id="searchInput">
+                <button onclick="searchProducts()">🔍</button>
+            </div>
+        </div>
+        
+        <div class="header-nav">
+            <a href="#" class="nav-item">
+                <span class="nav-item-label">Hello, sign in</span>
+                <span class="nav-item-main">Account & Lists</span>
             </a>
-            <div class="nav-dropdown-content">
-                <div class="dropdown-header">Your Orders</div>
-                <a href="/orders" class="dropdown-item">
-                    <strong>View All Orders</strong><br>
-                    <span style="font-size: 12px; color: #565959;">Track packages & view order history</span>
-                </a>
-                <a href="/orders" class="dropdown-item">
-                    <strong>Not Yet Shipped</strong><br>
-                    <span style="font-size: 12px; color: #565959;">View pending orders</span>
-                </a>
-                <a href="/orders" class="dropdown-item">
-                    <strong>Cancelled Orders</strong><br>
-                    <span style="font-size: 12px; color: #565959;">View cancelled items</span>
-                </a>
-                <div class="dropdown-footer">
-                    <a href="/orders">View all orders →</a>
+            
+            <a href="/orders" class="nav-item">
+                <span class="nav-item-label">Returns</span>
+                <span class="nav-item-main">& Orders</span>
+            </a>
+            
+            <a href="/cart" class="nav-item" style="align-items: center; position: relative;">
+                <div class="cart-icon">
+                    🛒
+                    <span class="cart-count" th:if="${cartItemCount != null and cartItemCount > 0}" th:text="${cartItemCount}" 
+                          style="position: absolute; top: -5px; right: -5px; background: #FF9900; color: #131921; 
+                          border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; 
+                          justify-content: center; font-size: 12px; font-weight: bold;">0</span>
                 </div>
-            </div>
+                <span class="nav-item-main">Cart</span>
+            </a>
         </div>
-        <a href="/cart" style="color: white; text-decoration: none;">
-            <div class="user-info">
-                🛒 Cart
-            </div>
-        </a>
-    </header>
+    </div>
     
+    <!-- Navigation Bar -->
+    <div class="nav-bar">
+        <a href="#" class="nav-all">☰ All</a>
+        <a href="#">Today's Deals</a>
+        <a href="#">Customer Service</a>
+        <a href="#">Registry</a>
+        <a href="#">Gift Cards</a>
+        <a href="#">Sell</a>
+    </div>
+    
+    <!-- Banner -->
+    <div class="banner">
+        You are on amazon.com. You can also shop on Amazon Demo for millions of products with fast local delivery.
+    </div>
+    
+    <!-- Main Content -->
     <div class="container">
+        <div class="breadcrumb">
+            <a href="/">Home</a> › Featured Products
+        </div>
+        
         <h1>Featured Products</h1>
         
         <div class="products-grid" th:if="${products != null and !products.isEmpty()}">
@@ -289,17 +520,38 @@
                 <img th:src="${product.imageUrl}" 
                      th:alt="${product.name}" 
                      class="product-image">
+                
+                <div class="product-badge" th:if="${product.stock > 0 and product.stock < 10}">Limited time deal</div>
+                
                 <div class="product-category" th:text="${product.category}">Category</div>
+                
                 <div class="product-name" th:text="${product.name}">Product Name</div>
-                <div class="product-description" th:text="${product.description}">Product description</div>
-                <div class="product-price">$<span th:text="${product.price}">0.00</span></div>
-                <div class="product-asin">ASIN: <span th:text="${product.asin}">ASIN</span></div>
-                <div class="product-stock" th:text="${product.stock > 0 ? 'In Stock (' + product.stock + ' available)' : 'Out of Stock'}">
+                
+                <div class="product-rating">
+                    <span class="stars">★★★★☆</span>
+                    <span class="rating-count">1,234</span>
+                </div>
+                
+                <div class="product-price-section">
+                    <div class="product-price">
+                        <span class="price-symbol">$</span><span class="price-whole" th:text="${#numbers.formatDecimal(product.price, 1, 0)}">0</span><span class="price-decimal" th:text="${#strings.substring(#numbers.formatDecimal(product.price, 1, 2), #strings.length(#numbers.formatDecimal(product.price, 1, 2)) - 2)}">00</span>
+                    </div>
+                    <div class="product-prime">🚚 FREE delivery</div>
+                    <div class="product-delivery">Get it as soon as <strong>Tomorrow</strong></div>
+                </div>
+                
+                <div class="product-stock" th:text="${product.stock > 0 ? 'In Stock' : 'Out of Stock'}" 
+                     th:style="${product.stock <= 0 ? 'color: #B12704;' : ''}">
                     In Stock
                 </div>
-                <form th:action="@{/cart/add/{id}(id=${product.id})}" method="post" style="display:inline;">
+                
+                <div class="product-asin" th:text="'ASIN: ' + ${product.asin}">ASIN: B0XXXXXX</div>
+                
+                <form th:action="@{/cart/add/{id}(id=${product.id})}" method="post">
                     <input type="hidden" name="quantity" value="1">
-                    <button class="buy-button" type="submit">Add to Cart</button>
+                    <button class="buy-button" type="submit" th:disabled="${product.stock <= 0}">
+                        <span th:text="${product.stock > 0 ? 'Add to Cart' : 'Out of Stock'}">Add to Cart</span>
+                    </button>
                 </form>
             </div>
         </div>
@@ -310,21 +562,71 @@
         </div>
     </div>
     
+    <!-- Back to Top -->
+    <div class="back-to-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+        Back to top
+    </div>
+    
+    <!-- Footer -->
     <footer>
-        <p>&copy; 2025 Amazon-like E-commerce Store. This is a demo project.</p>
-        <p>Created with Spring Boot, PostgreSQL, and Thymeleaf</p>
+        <div class="footer-content">
+            <div class="footer-column">
+                <h3>Get to Know Us</h3>
+                <a href="#">Careers</a>
+                <a href="#">Blog</a>
+                <a href="#">About Amazon</a>
+                <a href="#">Investor Relations</a>
+                <a href="#">Amazon Devices</a>
+            </div>
+            
+            <div class="footer-column">
+                <h3>Make Money with Us</h3>
+                <a href="#">Sell products on Amazon</a>
+                <a href="#">Sell on Amazon Business</a>
+                <a href="#">Sell apps on Amazon</a>
+                <a href="#">Become an Affiliate</a>
+                <a href="#">Advertise Your Products</a>
+            </div>
+            
+            <div class="footer-column">
+                <h3>Amazon Payment Products</h3>
+                <a href="#">Amazon Business Card</a>
+                <a href="#">Shop with Points</a>
+                <a href="#">Reload Your Balance</a>
+                <a href="#">Amazon Currency Converter</a>
+            </div>
+            
+            <div class="footer-column">
+                <h3>Let Us Help You</h3>
+                <a href="#">Amazon and COVID-19</a>
+                <a href="#">Your Account</a>
+                <a href="/orders">Your Orders</a>
+                <a href="#">Shipping Rates & Policies</a>
+                <a href="#">Returns & Replacements</a>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <div class="footer-logo">amazon<span>.com</span></div>
+            <p>&copy; 1996-2025, Amazon.com, Inc. or its affiliates | This is a demo project</p>
+            <p style="margin-top: 10px; color: #999;">Built with Spring Boot, PostgreSQL, Redis, and Thymeleaf</p>
+        </div>
     </footer>
     
     <script>
         function searchProducts() {
             const searchTerm = document.getElementById('searchInput').value.trim();
+            const category = document.getElementById('categoryFilter').value;
+            
+            let url = '/?';
             if (searchTerm) {
-                // Redirect to home page with search parameter
-                window.location.href = '/?search=' + encodeURIComponent(searchTerm);
-            } else {
-                // If empty search, reload to show all products
-                window.location.href = '/';
+                url += 'search=' + encodeURIComponent(searchTerm);
             }
+            if (category) {
+                url += (searchTerm ? '&' : '') + 'category=' + encodeURIComponent(category);
+            }
+            
+            window.location.href = url === '/?' ? '/' : url;
         }
         
         // Allow Enter key to search
@@ -334,12 +636,22 @@
             }
         });
         
-        // Pre-fill search box if there's a search parameter
+        // Category filter change
+        document.getElementById('categoryFilter').addEventListener('change', function() {
+            searchProducts();
+        });
+        
+        // Pre-fill search box and category if there are parameters
         window.addEventListener('DOMContentLoaded', function() {
             const urlParams = new URLSearchParams(window.location.search);
             const searchTerm = urlParams.get('search');
+            const category = urlParams.get('category');
+            
             if (searchTerm) {
                 document.getElementById('searchInput').value = searchTerm;
+            }
+            if (category) {
+                document.getElementById('categoryFilter').value = category;
             }
         });
     </script>

@@ -2,53 +2,431 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Checkout</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Amazon.com Checkout</title>
     <style>
-        body { font-family: Arial, sans-serif; max-width: 1200px; margin: 0 auto; padding: 20px; }
-        h1 { color: #333; }
-        .form-group { margin: 20px 0; }
-        label { display: block; margin-bottom: 5px; }
-        input { width: 100%; padding: 10px; }
-        .btn { padding: 10px 20px; background: #ff9900; color: #131921; border: none; cursor: pointer; margin: 5px; }
-        .summary { background: #f3f3f3; padding: 20px; margin: 20px 0; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Amazon Ember', Arial, sans-serif;
+            background-color: #EAEDED;
+        }
+        
+        /* Top Header */
+        .top-header {
+            background-color: #131921;
+            color: white;
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .logo {
+            font-size: 28px;
+            font-weight: bold;
+            color: white;
+            text-decoration: none;
+        }
+        
+        .logo span {
+            color: #FF9900;
+        }
+        
+        .checkout-header {
+            color: white;
+            font-size: 18px;
+        }
+        
+        .secure-checkout {
+            font-size: 12px;
+            color: #ccc;
+        }
+        
+        /* Container */
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 20px;
+        }
+        
+        .checkout-main {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+        }
+        
+        h1 {
+            color: #0F1111;
+            font-size: 28px;
+            font-weight: 400;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #DDD;
+        }
+        
+        .section {
+            margin-bottom: 30px;
+        }
+        
+        .section-header {
+            font-size: 18px;
+            font-weight: 700;
+            color: #0F1111;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .section-number {
+            background: #FF9900;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            font-size: 14px;
+            font-weight: 700;
+            color: #0F1111;
+            margin-bottom: 5px;
+        }
+        
+        input[type="text"] {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #888;
+            border-radius: 4px;
+            font-size: 14px;
+            box-shadow: 0 1px 2px rgba(15, 17, 17, 0.15) inset;
+        }
+        
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #e77600;
+            box-shadow: 0 0 3px 2px rgba(228, 121, 17, 0.5), 0 1px 2px rgba(15, 17, 17, 0.15) inset;
+        }
+        
+        .address-hint {
+            font-size: 12px;
+            color: #565959;
+            margin-top: 5px;
+        }
+        
+        .payment-methods {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .payment-option {
+            flex: 1;
+            padding: 15px;
+            border: 2px solid #D5D9D9;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s;
+        }
+        
+        .payment-option:hover {
+            border-color: #FF9900;
+            background-color: #FFF8E6;
+        }
+        
+        .payment-option.selected {
+            border-color: #FF9900;
+            background-color: #FFF8E6;
+        }
+        
+        .payment-icon {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+        
+        .place-order-button {
+            width: 100%;
+            padding: 12px;
+            background-color: #FFD814;
+            color: #0F1111;
+            border: 1px solid #FCD200;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            font-weight: 500;
+            margin-top: 20px;
+        }
+        
+        .place-order-button:hover {
+            background-color: #F7CA00;
+            border-color: #F2C200;
+        }
+        
+        .back-link {
+            display: inline-block;
+            color: #007185;
+            text-decoration: none;
+            font-size: 13px;
+            margin-top: 15px;
+        }
+        
+        .back-link:hover {
+            color: #C7511F;
+            text-decoration: underline;
+        }
+        
+        /* Order Summary Sidebar */
+        .order-summary {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            height: fit-content;
+            position: sticky;
+            top: 20px;
+        }
+        
+        .summary-header {
+            font-size: 18px;
+            font-weight: 700;
+            color: #0F1111;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #DDD;
+        }
+        
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+        
+        .summary-item.total {
+            font-size: 18px;
+            font-weight: 700;
+            color: #B12704;
+            padding-top: 10px;
+            border-top: 1px solid #DDD;
+            margin-top: 10px;
+        }
+        
+        .order-items {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #DDD;
+        }
+        
+        .order-item {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            font-size: 12px;
+        }
+        
+        .item-thumb {
+            width: 50px;
+            height: 50px;
+            object-fit: contain;
+            border: 1px solid #DDD;
+            border-radius: 4px;
+        }
+        
+        .item-info {
+            flex: 1;
+        }
+        
+        .item-name {
+            color: #0F1111;
+            margin-bottom: 3px;
+        }
+        
+        .item-qty {
+            color: #565959;
+        }
+        
+        /* Footer */
+        footer {
+            background-color: #232F3E;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            margin-top: 40px;
+        }
+        
+        .footer-text {
+            color: #DDD;
+            font-size: 12px;
+        }
     </style>
 </head>
 <body>
-    <h1>Checkout</h1>
-    
-    <div class="summary">
-        <h2>Order Summary</h2>
-        <div th:each="item : ${cartItems}">
-            <span th:text="${item.productName}">Product</span> x <span th:text="${item.quantity}">1</span> = 
-            $<span th:text="${item.subtotal}">0.00</span>
+    <!-- Top Header -->
+    <div class="top-header">
+        <a href="/" class="logo">amazon<span>.com</span></a>
+        <div>
+            <div class="checkout-header">Checkout</div>
+            <div class="secure-checkout">🔒 Secure checkout</div>
         </div>
-        <hr>
-        <strong>Total: $<span th:text="${total}">0.00</span></strong>
     </div>
     
-    <form action="/checkout/place-order" method="post" id="checkoutForm">
-        <div class="form-group">
-            <label for="name">Name:</label>
-            <input type="text" 
-                   id="name" 
-                   name="name" 
-                   required 
-                   placeholder="Enter your name"
-                   value="John Doe">
+    <!-- Main Content -->
+    <div class="container">
+        <div class="checkout-main">
+            <h1>Checkout</h1>
+            
+            <form action="/checkout/place-order" method="post" id="checkoutForm">
+                <!-- Section 1: Shipping Address -->
+                <div class="section">
+                    <div class="section-header">
+                        <span class="section-number">1</span>
+                        Shipping address
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="name">Full name (First and Last name)</label>
+                        <input type="text" 
+                               id="name" 
+                               name="name" 
+                               required 
+                               placeholder="Enter your full name"
+                               value="John Doe">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="address">Address</label>
+                        <input type="text" 
+                               id="address" 
+                               name="address" 
+                               required 
+                               placeholder="Street address or P.O. Box"
+                               value="123 Main St, Seattle, WA 98101">
+                        <div class="address-hint">We'll use this address to calculate tax and shipping charges</div>
+                    </div>
+                </div>
+                
+                <!-- Section 2: Payment Method -->
+                <div class="section">
+                    <div class="section-header">
+                        <span class="section-number">2</span>
+                        Payment method
+                    </div>
+                    
+                    <div class="payment-methods">
+                        <div class="payment-option selected">
+                            <div class="payment-icon">💳</div>
+                            <div>Credit Card</div>
+                        </div>
+                        <div class="payment-option">
+                            <div class="payment-icon">🏦</div>
+                            <div>Debit Card</div>
+                        </div>
+                        <div class="payment-option">
+                            <div class="payment-icon">📱</div>
+                            <div>Digital Wallet</div>
+                        </div>
+                    </div>
+                    
+                    <div style="padding: 15px; background: #F7F8F8; border-radius: 4px; font-size: 12px; color: #565959;">
+                        💳 Payment details will be collected on the next step
+                    </div>
+                </div>
+                
+                <!-- Section 3: Review Items -->
+                <div class="section">
+                    <div class="section-header">
+                        <span class="section-number">3</span>
+                        Review items and shipping
+                    </div>
+                    
+                    <div style="padding: 15px; background: #F7F8F8; border-radius: 4px; margin-bottom: 15px;">
+                        <div style="font-weight: 700; margin-bottom: 5px;">Delivery estimate</div>
+                        <div style="color: #007600; font-size: 14px;">📦 Arriving <strong>Tomorrow</strong></div>
+                    </div>
+                    
+                    <div th:each="item : ${cartItems}" style="margin-bottom: 10px; padding: 10px; border: 1px solid #DDD; border-radius: 4px;">
+                        <span th:text="${item.productName}">Product</span>
+                        <span style="color: #565959;"> (Qty: <span th:text="${item.quantity}">1</span>)</span>
+                    </div>
+                </div>
+                
+                <button type="submit" class="place-order-button">
+                    Place your order
+                </button>
+                
+                <div style="text-align: center; margin-top: 15px; font-size: 11px; color: #565959;">
+                    By placing your order, you agree to Amazon's privacy notice and conditions of use.
+                </div>
+                
+                <a href="/cart" class="back-link">← Return to cart</a>
+            </form>
         </div>
         
-        <div class="form-group">
-            <label for="address">Shipping Address:</label>
-            <input type="text" 
-                   id="address" 
-                   name="address" 
-                   required 
-                   placeholder="Enter shipping address"
-                   value="123 Main St, Seattle, WA 98101">
+        <!-- Order Summary Sidebar -->
+        <div class="order-summary">
+            <div class="summary-header">Order Summary</div>
+            
+            <div class="summary-item">
+                <span>Items:</span>
+                <span>$<span th:text="${#numbers.formatDecimal(total, 1, 2)}">0.00</span></span>
+            </div>
+            
+            <div class="summary-item">
+                <span>Shipping & handling:</span>
+                <span style="color: #007600;">FREE</span>
+            </div>
+            
+            <div class="summary-item">
+                <span>Total before tax:</span>
+                <span>$<span th:text="${#numbers.formatDecimal(total, 1, 2)}">0.00</span></span>
+            </div>
+            
+            <div class="summary-item">
+                <span>Estimated tax:</span>
+                <span>$<span th:text="${#numbers.formatDecimal(total * 0.08, 1, 2)}">0.00</span></span>
+            </div>
+            
+            <div class="summary-item total">
+                <span>Order total:</span>
+                <span>$<span th:text="${#numbers.formatDecimal(total * 1.08, 1, 2)}">0.00</span></span>
+            </div>
+            
+            <div class="order-items">
+                <div style="font-size: 14px; font-weight: 700; margin-bottom: 10px;">Items in your order</div>
+                <div class="order-item" th:each="item : ${cartItems}">
+                    <img src="https://via.placeholder.com/50" alt="Product" class="item-thumb">
+                    <div class="item-info">
+                        <div class="item-name" th:text="${item.productName}">Product Name</div>
+                        <div class="item-qty">Qty: <span th:text="${item.quantity}">1</span></div>
+                        <div style="font-weight: 700; color: #B12704;">$<span th:text="${#numbers.formatDecimal(item.subtotal, 1, 2)}">0.00</span></div>
+                    </div>
+                </div>
+            </div>
         </div>
-        
-        <button type="submit" class="btn">Place Order</button>
-        <a href="/cart" class="btn" style="text-decoration: none;">Back to Cart</a>
-    </form>
+    </div>
+    
+    <!-- Footer -->
+    <footer>
+        <div class="footer-text">
+            <p>&copy; 1996-2025, Amazon.com, Inc. or its affiliates | This is a demo project</p>
+        </div>
+    </footer>
 </body>
 </html>

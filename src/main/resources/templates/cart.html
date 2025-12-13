@@ -2,52 +2,403 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Shopping Cart</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Amazon.com Shopping Cart</title>
     <style>
-        body { font-family: Arial, sans-serif; max-width: 1200px; margin: 0 auto; padding: 20px; }
-        h1 { color: #333; }
-        table { width: 100%; border-collapse: collapse; margin: 20px 0; }
-        th, td { padding: 15px; text-align: left; border-bottom: 1px solid #ddd; }
-        .btn { padding: 10px 20px; background: #ff9900; color: #131921; border: none; cursor: pointer; }
-        .btn:hover { background: #f39c12; }
-        .total { font-size: 24px; font-weight: bold; text-align: right; margin: 20px 0; }
-        .empty { text-align: center; padding: 60px 20px; color: #565959; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Amazon Ember', Arial, sans-serif;
+            background-color: #EAEDED;
+        }
+        
+        /* Top Header */
+        .top-header {
+            background-color: #131921;
+            color: white;
+            padding: 8px 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .logo {
+            font-size: 28px;
+            font-weight: bold;
+            color: white;
+            text-decoration: none;
+            padding: 8px 12px;
+            border: 1px solid transparent;
+            border-radius: 2px;
+        }
+        
+        .logo:hover {
+            border-color: white;
+        }
+        
+        .logo span {
+            color: #FF9900;
+        }
+        
+        .search-section {
+            flex: 1;
+            display: flex;
+            max-width: 800px;
+        }
+        
+        .search-dropdown {
+            background: #f3f3f3;
+            border: none;
+            padding: 10px;
+            border-radius: 4px 0 0 4px;
+            font-size: 13px;
+        }
+        
+        .search-bar {
+            flex: 1;
+            display: flex;
+        }
+        
+        .search-bar input {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            font-size: 14px;
+        }
+        
+        .search-bar button {
+            padding: 0 20px;
+            background-color: #FEBD69;
+            border: none;
+            border-radius: 0 4px 4px 0;
+            cursor: pointer;
+            font-size: 18px;
+        }
+        
+        .header-nav {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+        
+        .nav-item {
+            color: white;
+            text-decoration: none;
+            font-size: 13px;
+            padding: 8px;
+            border: 1px solid transparent;
+            border-radius: 2px;
+        }
+        
+        .nav-item:hover {
+            border-color: white;
+        }
+        
+        /* Container */
+        .container {
+            max-width: 1500px;
+            margin: 20px auto;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 20px;
+        }
+        
+        .cart-main {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+        }
+        
+        .cart-header {
+            border-bottom: 1px solid #DDD;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+        
+        h1 {
+            color: #0F1111;
+            font-size: 28px;
+            font-weight: 400;
+        }
+        
+        .cart-item {
+            display: grid;
+            grid-template-columns: 180px 1fr 150px;
+            gap: 20px;
+            padding: 20px 0;
+            border-bottom: 1px solid #DDD;
+        }
+        
+        .item-image {
+            width: 180px;
+            height: 180px;
+            object-fit: contain;
+        }
+        
+        .item-details {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .item-name {
+            color: #0F1111;
+            font-size: 18px;
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+        
+        .item-name:hover {
+            color: #C7511F;
+            cursor: pointer;
+        }
+        
+        .item-stock {
+            color: #007600;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .item-price {
+            color: #0F1111;
+            font-size: 18px;
+            font-weight: 700;
+        }
+        
+        .item-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .quantity-selector {
+            background: #F0F2F2;
+            border: 1px solid #D5D9D9;
+            border-radius: 8px;
+            padding: 8px 12px;
+            font-size: 13px;
+            cursor: pointer;
+        }
+        
+        .remove-button {
+            background: none;
+            border: none;
+            color: #007185;
+            font-size: 13px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        
+        .remove-button:hover {
+            color: #C7511F;
+            text-decoration: underline;
+        }
+        
+        .item-subtotal {
+            text-align: right;
+        }
+        
+        /* Sidebar */
+        .cart-sidebar {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            height: fit-content;
+            position: sticky;
+            top: 20px;
+        }
+        
+        .subtotal {
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+        
+        .subtotal-amount {
+            font-weight: 700;
+            color: #0F1111;
+        }
+        
+        .checkout-button {
+            width: 100%;
+            padding: 12px;
+            background-color: #FFD814;
+            color: #0F1111;
+            border: 1px solid #FCD200;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            margin-top: 10px;
+            font-weight: 500;
+        }
+        
+        .checkout-button:hover {
+            background-color: #F7CA00;
+            border-color: #F2C200;
+        }
+        
+        .continue-shopping {
+            display: block;
+            text-align: center;
+            color: #007185;
+            text-decoration: none;
+            margin-top: 15px;
+            font-size: 13px;
+        }
+        
+        .continue-shopping:hover {
+            color: #C7511F;
+            text-decoration: underline;
+        }
+        
+        /* Empty Cart */
+        .empty-cart {
+            background: white;
+            padding: 60px 40px;
+            border-radius: 8px;
+            text-align: center;
+            grid-column: 1 / -1;
+        }
+        
+        .empty-cart h2 {
+            color: #0F1111;
+            font-size: 24px;
+            font-weight: 400;
+            margin-bottom: 20px;
+        }
+        
+        .empty-cart-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+        }
+        
+        /* Footer */
+        .back-to-top {
+            background-color: #37475A;
+            color: white;
+            text-align: center;
+            padding: 15px;
+            cursor: pointer;
+            font-size: 13px;
+            margin-top: 40px;
+        }
+        
+        .back-to-top:hover {
+            background-color: #485769;
+        }
+        
+        footer {
+            background-color: #232F3E;
+            color: white;
+            padding: 40px 20px 20px;
+            text-align: center;
+        }
+        
+        .footer-text {
+            color: #DDD;
+            font-size: 12px;
+        }
     </style>
 </head>
 <body>
-    <h1>Shopping Cart</h1>
-    
-    <div th:if="${cartItems != null and !cartItems.isEmpty()}">
-        <table>
-            <tr>
-                <th>Product</th>
-                <th>Price</th>
-                <th>Quantity</th>
-                <th>Subtotal</th>
-                <th>Action</th>
-            </tr>
-            <tr th:each="item : ${cartItems}">
-                <td th:text="${item.productName}">Product</td>
-                <td>$<span th:text="${item.price}">0.00</span></td>
-                <td th:text="${item.quantity}">1</td>
-                <td>$<span th:text="${item.subtotal}">0.00</span></td>
-                <td>
-                    <form th:action="@{/cart/remove/{id}(id=${item.productId})}" method="post" style="display:inline;">
-                        <button type="submit" class="btn">Remove</button>
-                    </form>
-                </td>
-            </tr>
-        </table>
+    <!-- Top Header -->
+    <div class="top-header">
+        <a href="/" class="logo">amazon<span>.com</span></a>
         
-        <div class="total">Total: $<span th:text="${total}">0.00</span></div>
+        <div class="search-section">
+            <select class="search-dropdown">
+                <option>All</option>
+            </select>
+            <div class="search-bar">
+                <input type="text" placeholder="Search Amazon">
+                <button>🔍</button>
+            </div>
+        </div>
         
-        <a href="/checkout"><button class="btn">Proceed to Checkout</button></a>
-        <a href="/"><button class="btn">Continue Shopping</button></a>
+        <div class="header-nav">
+            <a href="/orders" class="nav-item">Returns & Orders</a>
+            <a href="/cart" class="nav-item" style="font-weight: bold;">🛒 Cart</a>
+        </div>
     </div>
     
-    <div class="empty" th:if="${cartItems == null or cartItems.isEmpty()}">
-        <h2>Your cart is empty</h2>
-        <a href="/"><button class="btn">Start Shopping</button></a>
+    <!-- Main Content -->
+    <div class="container" th:if="${cartItems != null and !cartItems.isEmpty()}">
+        <div class="cart-main">
+            <div class="cart-header">
+                <h1>Shopping Cart</h1>
+            </div>
+            
+            <div class="cart-item" th:each="item : ${cartItems}">
+                <img th:src="${item.imageUrl != null ? item.imageUrl : 'https://via.placeholder.com/180'}" 
+                     th:alt="${item.productName}" 
+                     class="item-image"
+                     onerror="this.src='https://via.placeholder.com/180'">
+                
+                <div class="item-details">
+                    <div class="item-name" th:text="${item.productName}">Product Name</div>
+                    <div class="item-stock">In Stock</div>
+                    <div class="item-price">$<span th:text="${#numbers.formatDecimal(item.price, 1, 2)}">0.00</span></div>
+                    
+                    <div class="item-actions">
+                        <select class="quantity-selector">
+                            <option th:selected="${item.quantity == 1}">Qty: 1</option>
+                            <option th:selected="${item.quantity == 2}">Qty: 2</option>
+                            <option th:selected="${item.quantity == 3}">Qty: 3</option>
+                            <option th:selected="${item.quantity == 4}">Qty: 4</option>
+                            <option th:selected="${item.quantity == 5}">Qty: 5</option>
+                        </select>
+                        
+                        <form th:action="@{/cart/remove/{id}(id=${item.productId})}" method="post" style="display: inline;">
+                            <button type="submit" class="remove-button">Delete</button>
+                        </form>
+                    </div>
+                </div>
+                
+                <div class="item-subtotal">
+                    <div class="item-price">$<span th:text="${#numbers.formatDecimal(item.subtotal, 1, 2)}">0.00</span></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="cart-sidebar">
+            <div class="subtotal">
+                <span>Subtotal (<span th:text="${cartItems.size()}">0</span> items): </span>
+                <span class="subtotal-amount">$<span th:text="${#numbers.formatDecimal(total, 1, 2)}">0.00</span></span>
+            </div>
+            
+            <a href="/checkout" style="text-decoration: none;">
+                <button class="checkout-button">Proceed to checkout</button>
+            </a>
+            
+            <a href="/" class="continue-shopping">Continue shopping</a>
+        </div>
     </div>
+    
+    <div class="container" th:if="${cartItems == null or cartItems.isEmpty()}">
+        <div class="empty-cart">
+            <div class="empty-cart-icon">🛒</div>
+            <h2>Your Amazon Cart is empty</h2>
+            <p style="color: #565959; margin-bottom: 20px;">Shop today's deals</p>
+            <a href="/" style="text-decoration: none;">
+                <button class="checkout-button" style="max-width: 300px; margin: 0 auto;">Start Shopping</button>
+            </a>
+        </div>
+    </div>
+    
+    <!-- Back to Top -->
+    <div class="back-to-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+        Back to top
+    </div>
+    
+    <!-- Footer -->
+    <footer>
+        <div class="footer-text">
+            <p>&copy; 1996-2025, Amazon.com, Inc. or its affiliates | This is a demo project</p>
+        </div>
+    </footer>
 </body>
 </html>
