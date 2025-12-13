@@ -46,6 +46,9 @@ dependencies {
 	// Redisson for Redis distributed locks
 	implementation 'org.redisson:redisson:3.24.3'
 	
+	// Jackson JSR310 for Java 8 date/time support in Kafka
+	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+	
 	// Logstash encoder for ELK stack integration
 	implementation 'net.logstash.logback:logstash-logback-encoder:7.4'
 	

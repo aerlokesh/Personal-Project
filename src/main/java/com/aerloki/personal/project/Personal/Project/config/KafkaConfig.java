@@ -13,6 +13,8 @@ import org.springframework.kafka.core.ProducerFactory;
 import org.springframework.kafka.support.serializer.JsonSerializer;
 
 import com.aerloki.personal.project.Personal.Project.event.OrderPlacedEvent;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -62,7 +64,14 @@ public class KafkaConfig {
         configProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         configProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         configProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
-        return new DefaultKafkaProducerFactory<>(configProps);
+        
+        // Configure ObjectMapper to handle Java 8 date/time types
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+        
+        JsonSerializer<OrderPlacedEvent> jsonSerializer = new JsonSerializer<>(objectMapper);
+        
+        return new DefaultKafkaProducerFactory<>(configProps, new StringSerializer(), jsonSerializer);
     }
     
     @Bean
