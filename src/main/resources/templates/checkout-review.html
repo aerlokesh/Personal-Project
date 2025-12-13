@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - Review Order</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Amazon Ember', Arial, sans-serif;
+            background-color: #f3f3f3;
+        }
+        
+        header {
+            background-color: #131921;
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #ff9900;
+            text-decoration: none;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 20px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .progress-bar {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 40px;
+            padding: 0 50px;
+        }
+        
+        .progress-step {
+            flex: 1;
+            text-align: center;
+            position: relative;
+        }
+        
+        .progress-step::before {
+            content: '';
+            position: absolute;
+            top: 15px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #ddd;
+            z-index: -1;
+        }
+        
+        .progress-step:first-child::before {
+            left: 50%;
+        }
+        
+        .progress-step:last-child::before {
+            right: 50%;
+        }
+        
+        .progress-number {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: #ddd;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #666;
+        }
+        
+        .progress-step.active .progress-number {
+            background: #ff9900;
+            color: white;
+        }
+        
+        .progress-step.completed .progress-number {
+            background: #067d62;
+            color: white;
+        }
+        
+        h1 {
+            color: #131921;
+            margin-bottom: 30px;
+        }
+        
+        h2 {
+            color: #131921;
+            font-size: 18px;
+            margin-bottom: 15px;
+            margin-top: 30px;
+        }
+        
+        .review-section {
+            background: #f7f7f7;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .review-section h3 {
+            color: #0F1111;
+            font-size: 16px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .edit-link {
+            font-size: 14px;
+            color: #007185;
+            text-decoration: none;
+            font-weight: normal;
+        }
+        
+        .edit-link:hover {
+            color: #C7511F;
+            text-decoration: underline;
+        }
+        
+        .info-line {
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: #0F1111;
+        }
+        
+        .order-items {
+            margin-top: 20px;
+        }
+        
+        .order-item {
+            display: flex;
+            gap: 20px;
+            padding: 15px;
+            border-bottom: 1px solid #ddd;
+            align-items: center;
+        }
+        
+        .order-item:last-child {
+            border-bottom: none;
+        }
+        
+        .item-image {
+            width: 80px;
+            height: 80px;
+            object-fit: contain;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        
+        .item-details {
+            flex: 1;
+        }
+        
+        .item-name {
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+        
+        .item-quantity {
+            font-size: 13px;
+            color: #565959;
+        }
+        
+        .item-price {
+            font-size: 18px;
+            font-weight: bold;
+            color: #B12704;
+        }
+        
+        .order-total {
+            background: white;
+            padding: 20px;
+            border: 2px solid #007185;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+        
+        .total-row.grand-total {
+            font-size: 22px;
+            font-weight: bold;
+            color: #B12704;
+            padding-top: 15px;
+            border-top: 1px solid #ddd;
+            margin-top: 15px;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+        
+        .btn-primary {
+            background-color: #ff9900;
+            color: #131921;
+            flex: 1;
+        }
+        
+        .btn-primary:hover {
+            background-color: #f39c12;
+        }
+        
+        .btn-secondary {
+            background-color: #fff;
+            color: #0F1111;
+            border: 1px solid #D5D9D9;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #f7f7f7;
+        }
+        
+        .terms {
+            font-size: 12px;
+            color: #565959;
+            margin-top: 20px;
+            padding: 15px;
+            background: #f7f7f7;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <a href="/" class="logo">amazone</a>
+        <div style="color: white;">Checkout</div>
+    </header>
+    
+    <div class="container">
+        <div class="progress-bar">
+            <div class="progress-step completed">
+                <div class="progress-number">✓</div>
+                <div>Address</div>
+            </div>
+            <div class="progress-step completed">
+                <div class="progress-number">✓</div>
+                <div>Payment</div>
+            </div>
+            <div class="progress-step active">
+                <div class="progress-number">3</div>
+                <div>Review</div>
+            </div>
+        </div>
+        
+        <h1>Review Your Order</h1>
+        
+        <!-- Shipping Address Section -->
+        <div class="review-section">
+            <h3>
+                Shipping Address
+                <a href="/checkout" class="edit-link">Change</a>
+            </h3>
+            <div class="info-line" th:text="${session.fullName}">John Doe</div>
+            <div class="info-line" th:text="${session.fullAddress}">123 Main St, Seattle, WA 98101</div>
+            <div class="info-line" th:text="${session.phoneNumber}">555-123-4567</div>
+        </div>
+        
+        <!-- Payment Method Section -->
+        <div class="review-section">
+            <h3>
+                Payment Method
+                <a href="/checkout/payment" class="edit-link">Change</a>
+            </h3>
+            <div class="info-line">
+                <span th:if="${session.paymentMethod == 'CREDIT_CARD'}">Credit Card ending in <span th:text="${#strings.substring(session.cardNumber, session.cardNumber.length() - 4)}">****</span></span>
+                <span th:if="${session.paymentMethod == 'DEBIT_CARD'}">Debit Card ending in <span th:text="${#strings.substring(session.cardNumber, session.cardNumber.length() - 4)}">****</span></span>
+                <span th:if="${session.paymentMethod == 'UPI'}">UPI - <span th:text="${session.upiId}">user@upi</span></span>
+                <span th:if="${session.paymentMethod == 'NET_BANKING'}">Net Banking</span>
+                <span th:if="${session.paymentMethod == 'COD'}">Cash on Delivery</span>
+            </div>
+        </div>
+        
+        <!-- Order Items -->
+        <h2>Order Items</h2>
+        <div class="review-section">
+            <div class="order-items">
+                <div class="order-item" th:each="item : ${cartItems}">
+                    <img th:src="${item.imageUrl}" 
+                         th:alt="${item.productName}" 
+                         class="item-image"
+                         onerror="this.src='https://via.placeholder.com/80x80?text=No+Image'">
+                    <div class="item-details">
+                        <div class="item-name" th:text="${item.productName}">Product Name</div>
+                        <div class="item-quantity">Quantity: <span th:text="${item.quantity}">1</span></div>
+                    </div>
+                    <div class="item-price">$<span th:text="${item.subtotal}">0.00</span></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Order Summary -->
+        <div class="order-total">
+            <div class="total-row">
+                <span>Items:</span>
+                <span>$<span th:text="${total}">0.00</span></span>
+            </div>
+            <div class="total-row">
+                <span>Shipping & Handling:</span>
+                <span>FREE</span>
+            </div>
+            <div class="total-row">
+                <span>Tax:</span>
+                <span>$0.00</span>
+            </div>
+            <div class="total-row grand-total">
+                <span>Order Total:</span>
+                <span>$<span th:text="${total}">0.00</span></span>
+            </div>
+        </div>
+        
+        <div class="terms">
+            By placing your order, you agree to our privacy notice and conditions of use. 
+            This is a demo e-commerce site for educational purposes.
+        </div>
+        
+        <form action="/checkout/place-order" method="post">
+            <div class="button-group">
+                <a href="/checkout/payment" class="btn btn-secondary">Back to Payment</a>
+                <button type="submit" class="btn btn-primary">Place Your Order</button>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Orders</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Amazon Ember', Arial, sans-serif;
+            background-color: #f3f3f3;
+        }
+        
+        header {
+            background-color: #131921;
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #ff9900;
+            text-decoration: none;
+        }
+        
+        .header-link {
+            color: white;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        
+        .header-link:hover {
+            color: #ff9900;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+        
+        h1 {
+            color: #131921;
+            margin-bottom: 30px;
+            font-size: 28px;
+        }
+        
+        .order-card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .order-header {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 15px;
+        }
+        
+        .order-info {
+            font-size: 12px;
+        }
+        
+        .order-info-label {
+            color: #565959;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+        
+        .order-info-value {
+            color: #0F1111;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .order-items {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .order-item-images {
+            display: flex;
+            gap: 10px;
+            flex: 1;
+        }
+        
+        .item-image {
+            width: 80px;
+            height: 80px;
+            object-fit: contain;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        
+        .order-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border: 1px solid #D5D9D9;
+            border-radius: 8px;
+            background: white;
+            color: #0F1111;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            display: inline-block;
+        }
+        
+        .btn:hover {
+            background-color: #f7f7f7;
+        }
+        
+        .btn-primary {
+            background-color: #ff9900;
+            color: #131921;
+            border-color: #ff9900;
+        }
+        
+        .btn-primary:hover {
+            background-color: #f39c12;
+        }
+        
+        .status-badge {
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .status-pending {
+            background-color: #FFF9E6;
+            color: #7D6608;
+        }
+        
+        .status-confirmed {
+            background-color: #E6F7FF;
+            color: #004085;
+        }
+        
+        .status-shipped {
+            background-color: #E8F5E9;
+            color: #2E7D32;
+        }
+        
+        .status-delivered {
+            background-color: #E7F3EC;
+            color: #067d62;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            background: white;
+            border-radius: 8px;
+        }
+        
+        .empty-state h2 {
+            color: #565959;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <a href="/" class="logo">amazone</a>
+        <a href="/" class="header-link">Home</a>
+        <a href="/orders" class="header-link">Your Orders</a>
+        <a href="/cart" class="header-link">🛒 Cart</a>
+    </header>
+    
+    <div class="container">
+        <h1>Your Orders</h1>
+        
+        <div th:if="${orders != null and !orders.isEmpty()}">
+            <div class="order-card" th:each="order : ${orders}">
+                <div class="order-header">
+                    <div class="order-info">
+                        <div class="order-info-label">Order Placed</div>
+                        <div class="order-info-value" th:text="${#temporals.format(order.orderDate, 'MMM dd, yyyy')}">Date</div>
+                    </div>
+                    <div class="order-info">
+                        <div class="order-info-label">Total</div>
+                        <div class="order-info-value">$<span th:text="${order.totalAmount}">0.00</span></div>
+                    </div>
+                    <div class="order-info">
+                        <div class="order-info-label">Ship To</div>
+                        <div class="order-info-value" th:text="${#strings.abbreviate(order.shippingAddress, 25)}">Address</div>
+                    </div>
+                    <div class="order-info">
+                        <div class="order-info-label">Order #</div>
+                        <div class="order-info-value" th:text="${order.id}">123</div>
+                    </div>
+                </div>
+                
+                <div class="order-items">
+                    <div class="order-item-images">
+                        <img th:each="item, iterStat : ${order.orderItems}" 
+                             th:if="${iterStat.index < 3}"
+                             th:src="${item.product.imageUrl}" 
+                             th:alt="${item.product.name}" 
+                             class="item-image"
+                             onerror="this.src='https://via.placeholder.com/80x80?text=No+Image'">
+                        <div th:if="${#lists.size(order.orderItems) > 3}" 
+                             style="width: 80px; height: 80px; display: flex; align-items: center; justify-content: center; border: 1px solid #ddd; border-radius: 4px; background: #f7f7f7; font-size: 14px; color: #565959;">
+                            +<span th:text="${#lists.size(order.orderItems) - 3}">0</span> more
+                        </div>
+                    </div>
+                    <div class="order-actions">
+                        <a th:href="@{/orders/{id}(id=${order.id})}" class="btn btn-primary">View Order Details</a>
+                        <a th:href="@{/orders/{id}(id=${order.id})}" class="btn">Track Package</a>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 10px;">
+                    <span class="status-badge" 
+                          th:classappend="${order.status == 'PENDING' ? 'status-pending' : 
+                                           order.status == 'CONFIRMED' ? 'status-confirmed' : 
+                                           order.status == 'SHIPPED' ? 'status-shipped' : 
+                                           order.status == 'DELIVERED' ? 'status-delivered' : ''}"
+                          th:text="${order.status}">Status</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="empty-state" th:if="${orders == null or orders.isEmpty()}">
+            <h2>You haven't placed any orders yet</h2>
+            <p style="color: #565959; margin-bottom: 20px;">Start shopping and your orders will appear here!</p>
+            <a href="/" class="btn btn-primary">Start Shopping</a>
+        </div>
+    </div>
+</body>
+</html>

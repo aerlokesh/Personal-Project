@@ -23,33 +23,114 @@ public class CheckoutController {
     private final OrderService orderService;
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
+    private final CheckoutSession checkoutSession;
     
     public CheckoutController(CartService cartService, OrderService orderService, 
-                            UserRepository userRepository, ProductRepository productRepository) {
+                            UserRepository userRepository, ProductRepository productRepository,
+                            CheckoutSession checkoutSession) {
         this.cartService = cartService;
         this.orderService = orderService;
         this.userRepository = userRepository;
         this.productRepository = productRepository;
+        this.checkoutSession = checkoutSession;
     }
     
+    // Step 1: Address
     @GetMapping
     public String showCheckout(Model model) {
+        if (cartService.getCartItems().isEmpty()) {
+            return "redirect:/cart";
+        }
+        checkoutSession.setCurrentStep(1);
         model.addAttribute("cartItems", cartService.getCartItems());
         model.addAttribute("total", cartService.getTotal());
-        return "checkout";
+        model.addAttribute("session", checkoutSession);
+        return "checkout-address";
     }
     
+    @PostMapping("/address")
+    public String processAddress(@RequestParam String fullName,
+                                 @RequestParam String phoneNumber,
+                                 @RequestParam String addressLine1,
+                                 @RequestParam(required = false) String addressLine2,
+                                 @RequestParam String city,
+                                 @RequestParam String state,
+                                 @RequestParam String zipCode,
+                                 @RequestParam(defaultValue = "United States") String country) {
+        
+        checkoutSession.setFullName(fullName);
+        checkoutSession.setPhoneNumber(phoneNumber);
+        checkoutSession.setAddressLine1(addressLine1);
+        checkoutSession.setAddressLine2(addressLine2);
+        checkoutSession.setCity(city);
+        checkoutSession.setState(state);
+        checkoutSession.setZipCode(zipCode);
+        checkoutSession.setCountry(country);
+        checkoutSession.setCurrentStep(2);
+        
+        logger.info("Address saved - Name: {}, City: {}, State: {}", fullName, city, state);
+        
+        return "redirect:/checkout/payment";
+    }
+    
+    // Step 2: Payment
+    @GetMapping("/payment")
+    public String showPayment(Model model) {
+        if (checkoutSession.getCurrentStep() < 2) {
+            return "redirect:/checkout";
+        }
+        model.addAttribute("cartItems", cartService.getCartItems());
+        model.addAttribute("total", cartService.getTotal());
+        model.addAttribute("session", checkoutSession);
+        return "checkout-payment";
+    }
+    
+    @PostMapping("/payment")
+    public String processPayment(@RequestParam String paymentMethod,
+                                 @RequestParam(required = false) String cardNumber,
+                                 @RequestParam(required = false) String cardHolderName,
+                                 @RequestParam(required = false) String expiryDate,
+                                 @RequestParam(required = false) String cvv,
+                                 @RequestParam(required = false) String upiId) {
+        
+        checkoutSession.setPaymentMethod(paymentMethod);
+        
+        if ("CREDIT_CARD".equals(paymentMethod) || "DEBIT_CARD".equals(paymentMethod)) {
+            checkoutSession.setCardNumber(cardNumber);
+            checkoutSession.setCardHolderName(cardHolderName);
+            checkoutSession.setExpiryDate(expiryDate);
+            checkoutSession.setCvv(cvv);
+        } else if ("UPI".equals(paymentMethod)) {
+            checkoutSession.setUpiId(upiId);
+        }
+        
+        checkoutSession.setCurrentStep(3);
+        
+        logger.info("Payment method saved - Method: {}", paymentMethod);
+        
+        return "redirect:/checkout/review";
+    }
+    
+    // Step 3: Review Order
+    @GetMapping("/review")
+    public String showReview(Model model) {
+        if (checkoutSession.getCurrentStep() < 3) {
+            return "redirect:/checkout";
+        }
+        model.addAttribute("cartItems", cartService.getCartItems());
+        model.addAttribute("total", cartService.getTotal());
+        model.addAttribute("session", checkoutSession);
+        return "checkout-review";
+    }
+    
+    // Final step: Place Order
     @PostMapping("/place-order")
-    public String placeOrder(@RequestParam(name = "name", required = false) String name,
-                            @RequestParam(name = "address", required = false) String address,
-                            Model model) {
+    public String placeOrder(Model model) {
         
-        // Structured logging for ELK stack
-        logger.info("Order placement initiated - Name: {}, Address: {}", 
-                    name != null ? name : "NOT_PROVIDED", 
-                    address != null ? address : "NOT_PROVIDED");
+        if (checkoutSession.getCurrentStep() < 3) {
+            return "redirect:/checkout";
+        }
         
-        // Get cart items
         List<CartItem> cartItems = cartService.getCartItems();
         
         if (cartItems.isEmpty()) {
@@ -72,18 +153,23 @@ public class CheckoutController {
             orderItems.add(orderItem);
         }
         
-        Order order = orderService.createOrder(user, orderItems, address);
+        // Create order with checkout session data
+        String fullAddress = checkoutSession.getFullAddress();
+        Order order = orderService.createOrder(user, orderItems, fullAddress);
         
-        logger.info("Order created successfully - Order ID: {}, Total: {}, Address: {}", 
+        logger.info("Order placed - ID: {}, Total: {}, Payment: {}, Address: {}", 
                     order.getId(), 
-                    order.getTotalAmount(), 
-                    order.getShippingAddress() != null ? order.getShippingAddress() : "EMPTY");
+                    order.getTotalAmount(),
+                    checkoutSession.getPaymentMethod(),
+                    fullAddress);
         
-        // Clear cart
+        // Clear cart and reset checkout session
         cartService.clearCart();
+        checkoutSession.reset();
         
         // Show confirmation
         model.addAttribute("order", order);
+        model.addAttribute("session", checkoutSession);
         return "order-confirmation";
     }
 }
