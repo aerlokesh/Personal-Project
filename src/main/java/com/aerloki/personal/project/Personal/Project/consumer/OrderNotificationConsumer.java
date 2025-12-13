@@ -24,7 +24,7 @@ public class OrderNotificationConsumer {
      */
     @KafkaListener(
         topics = "${kafka.topic.order-placed}",
-        groupId = "${spring.kafka.consumer.group-id}",
+        groupId = "notification-group",
         containerFactory = "kafkaListenerContainerFactory"
     )
     public void sendOrderNotification(OrderPlacedEvent event) {
