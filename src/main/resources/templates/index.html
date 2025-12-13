@@ -228,16 +228,14 @@
     </footer>
     
     <script>
-        function buyProduct(asin, name) {
-            alert('Added to cart: ' + name + ' (ASIN: ' + asin + ')');
-            // In a real application, this would add the item to a shopping cart
-        }
-        
         function searchProducts() {
-            const searchTerm = document.getElementById('searchInput').value;
+            const searchTerm = document.getElementById('searchInput').value.trim();
             if (searchTerm) {
-                // In a real application, this would filter or search products
-                alert('Searching for: ' + searchTerm);
+                // Redirect to home page with search parameter
+                window.location.href = '/?search=' + encodeURIComponent(searchTerm);
+            } else {
+                // If empty search, reload to show all products
+                window.location.href = '/';
             }
         }
         
@@ -245,6 +243,15 @@
         document.getElementById('searchInput').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
                 searchProducts();
+            }
+        });
+        
+        // Pre-fill search box if there's a search parameter
+        window.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const searchTerm = urlParams.get('search');
+            if (searchTerm) {
+                document.getElementById('searchInput').value = searchTerm;
             }
         });
     </script>
