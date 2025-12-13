@@ -18,6 +18,26 @@ public class NotificationService {
     private final JavaMailSender mailSender;
     
     /**
+     * Send a generic email
+     */
+    @Async
+    public void sendEmail(String toEmail, String subject, String content) {
+        try {
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setFrom("noreply@personalproject.com");
+            message.setTo(toEmail);
+            message.setSubject(subject);
+            message.setText(content);
+            
+            mailSender.send(message);
+            log.info("Email sent successfully to: {} with subject: {}", toEmail, subject);
+        } catch (Exception e) {
+            log.error("Failed to send email to: {} with subject: {}", toEmail, subject, e);
+            throw new RuntimeException("Failed to send email", e);
+        }
+    }
+    
+    /**
      * Send OTP email for signup verification
      */
     @Async
