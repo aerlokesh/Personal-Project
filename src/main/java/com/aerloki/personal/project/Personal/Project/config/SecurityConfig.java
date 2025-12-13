@@ -18,7 +18,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
             .authorizeHttpRequests(authorize -> authorize
-                .requestMatchers("/", "/signup", "/signin", "/css/**", "/js/**", "/images/**", "/api/products/**").permitAll()
+                .requestMatchers("/", "/signup", "/signin", "/verify-otp", "/css/**", "/js/**", "/images/**", "/api/products/**").permitAll()
                 .requestMatchers("/cart/**", "/checkout/**", "/orders/**").authenticated()
                 .anyRequest().authenticated()
             )
@@ -30,7 +30,7 @@ public class SecurityConfig {
             )
             .logout(logout -> logout
                 .logoutUrl("/logout")
-                .logoutSuccessUrl("/")
+                .logoutSuccessUrl("/signin")
                 .permitAll()
             )
             .csrf(csrf -> csrf

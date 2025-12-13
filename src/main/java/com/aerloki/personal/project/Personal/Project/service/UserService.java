@@ -37,7 +37,12 @@ public class UserService implements UserDetailsService {
     
     @Transactional
     public User registerUser(String email, String name, String password) {
+        System.out.println("DEBUG - Attempting to register user:");
+        System.out.println("  Email: [" + email + "]");
+        System.out.println("  Name: [" + name + "]");
+        
         if (userRepository.findByEmail(email).isPresent()) {
+            System.out.println("  ERROR: User already exists with email: " + email);
             throw new RuntimeException("User already exists with email: " + email);
         }
         
@@ -46,7 +51,13 @@ public class UserService implements UserDetailsService {
         user.setName(name);
         user.setPassword(passwordEncoder.encode(password));
         
-        return userRepository.save(user);
+        System.out.println("  Encoded password length: " + user.getPassword().length());
+        System.out.println("  Saving user to database...");
+        
+        User savedUser = userRepository.save(user);
+        
+        System.out.println("  User saved successfully with ID: " + savedUser.getId());
+        return savedUser;
     }
     
     public Optional<User> findByEmail(String email) {

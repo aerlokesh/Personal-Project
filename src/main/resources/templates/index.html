@@ -475,7 +475,7 @@
                 <span class="nav-item-label">Hello, <span sec:authentication="name"></span></span>
                 <span class="nav-item-main">
                     <a href="/orders" style="color: white; text-decoration: none;">Orders</a> | 
-                    <form action="/logout" method="post" style="display: inline;">
+                    <form th:action="@{/logout}" method="post" style="display: inline;">
                         <button type="submit" style="background: none; border: none; color: white; cursor: pointer; font-weight: bold; font-size: 13px; padding: 0;">Sign out</button>
                     </form>
                 </span>

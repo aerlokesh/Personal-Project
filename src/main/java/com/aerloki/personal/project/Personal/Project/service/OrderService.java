@@ -16,16 +16,21 @@ import com.aerloki.personal.project.Personal.Project.model.User;
 import com.aerloki.personal.project.Personal.Project.repository.OrderRepository;
 import com.aerloki.personal.project.Personal.Project.repository.ProductRepository;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Service
 @Transactional
+@Slf4j
 public class OrderService {
     
     private final OrderRepository orderRepository;
     private final ProductRepository productRepository;
+    private final NotificationService notificationService;
     
-    public OrderService(OrderRepository orderRepository, ProductRepository productRepository) {
+    public OrderService(OrderRepository orderRepository, ProductRepository productRepository, NotificationService notificationService) {
         this.orderRepository = orderRepository;
         this.productRepository = productRepository;
+        this.notificationService = notificationService;
     }
     
     @Cacheable(value = "orders", key = "'all'")
@@ -60,7 +65,18 @@ public class OrderService {
         order.setOrderItems(items);
         order.setTotalAmount(total);
         
-        return orderRepository.save(order);
+        Order savedOrder = orderRepository.save(order);
+        
+        // Send order confirmation email asynchronously
+        try {
+            notificationService.sendOrderConfirmationEmail(user.getEmail(), savedOrder);
+            log.info("Order confirmation email queued for order: {}", savedOrder.getId());
+        } catch (Exception e) {
+            log.error("Failed to queue order confirmation email for order: {}", savedOrder.getId(), e);
+            // Don't throw exception - order is already created
+        }
+        
+        return savedOrder;
     }
     
     @CacheEvict(value = "orders", allEntries = true)
