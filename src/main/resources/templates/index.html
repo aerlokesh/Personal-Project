@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" 
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -469,7 +470,19 @@
         </div>
         
         <div class="header-nav">
-            <a href="#" class="nav-item">
+            <!-- Authenticated User -->
+            <div sec:authorize="isAuthenticated()" class="nav-item" style="cursor: default;">
+                <span class="nav-item-label">Hello, <span sec:authentication="name"></span></span>
+                <span class="nav-item-main">
+                    <a href="/orders" style="color: white; text-decoration: none;">Orders</a> | 
+                    <form action="/logout" method="post" style="display: inline;">
+                        <button type="submit" style="background: none; border: none; color: white; cursor: pointer; font-weight: bold; font-size: 13px; padding: 0;">Sign out</button>
+                    </form>
+                </span>
+            </div>
+            
+            <!-- Guest User -->
+            <a href="/signin" class="nav-item" sec:authorize="!isAuthenticated()">
                 <span class="nav-item-label">Hello, sign in</span>
                 <span class="nav-item-main">Account & Lists</span>
             </a>

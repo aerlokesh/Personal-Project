@@ -247,6 +247,7 @@
         </div>
         
         <form action="/checkout/address" method="post">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
             <div class="form-row">
                 <div class="form-group">
                     <label for="fullName">Full Name <span class="required">*</span></label>

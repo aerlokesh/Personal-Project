@@ -352,6 +352,7 @@
         </div>
         
         <form action="/checkout/place-order" method="post">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
             <div class="button-group">
                 <a href="/checkout/payment" class="btn btn-secondary">Back to Payment</a>
                 <button type="submit" class="btn btn-primary">Place Your Order</button>

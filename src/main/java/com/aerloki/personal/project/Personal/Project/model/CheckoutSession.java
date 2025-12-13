@@ -1,15 +1,18 @@
 package com.aerloki.personal.project.Personal.Project.model;
 
-import lombok.Data;
+import java.io.Serializable;
+
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.annotation.SessionScope;
 
-import java.io.Serializable;
+import lombok.Data;
 
 @Component
 @SessionScope
 @Data
 public class CheckoutSession implements Serializable {
+    
+    private static final long serialVersionUID = 1L;
     
     // Step 1: Address
     private String fullName;

@@ -1,15 +1,18 @@
 package com.aerloki.personal.project.Personal.Project.controller;
 
-import com.aerloki.personal.project.Personal.Project.model.Order;
-import com.aerloki.personal.project.Personal.Project.repository.OrderRepository;
-import com.aerloki.personal.project.Personal.Project.repository.UserRepository;
+import java.util.List;
+
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import java.util.List;
+import com.aerloki.personal.project.Personal.Project.model.Order;
+import com.aerloki.personal.project.Personal.Project.model.User;
+import com.aerloki.personal.project.Personal.Project.repository.OrderRepository;
+import com.aerloki.personal.project.Personal.Project.repository.UserRepository;
 
 @Controller
 @RequestMapping("/orders")
@@ -24,9 +27,13 @@ public class OrderController {
     }
     
     @GetMapping
-    public String viewOrders(Model model) {
-        // For demo purposes, get orders for user with ID 1
-        List<Order> orders = orderRepository.findByUserId(1L);
+    public String viewOrders(Model model, Authentication authentication) {
+        // Get currently logged-in user
+        String email = authentication.getName();
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        
+        List<Order> orders = orderRepository.findByUserId(user.getId());
         model.addAttribute("orders", orders);
         return "orders";
     }

@@ -1,17 +1,28 @@
 package com.aerloki.personal.project.Personal.Project.controller;
 
-import com.aerloki.personal.project.Personal.Project.model.*;
-import com.aerloki.personal.project.Personal.Project.repository.ProductRepository;
-import com.aerloki.personal.project.Personal.Project.repository.UserRepository;
-import com.aerloki.personal.project.Personal.Project.service.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.security.core.Authentication;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import com.aerloki.personal.project.Personal.Project.model.CartItem;
+import com.aerloki.personal.project.Personal.Project.model.CheckoutSession;
+import com.aerloki.personal.project.Personal.Project.model.Order;
+import com.aerloki.personal.project.Personal.Project.model.OrderItem;
+import com.aerloki.personal.project.Personal.Project.model.Product;
+import com.aerloki.personal.project.Personal.Project.model.User;
+import com.aerloki.personal.project.Personal.Project.repository.ProductRepository;
+import com.aerloki.personal.project.Personal.Project.repository.UserRepository;
+import com.aerloki.personal.project.Personal.Project.service.CartService;
+import com.aerloki.personal.project.Personal.Project.service.OrderService;
 
 @Controller
 @RequestMapping("/checkout")
@@ -46,6 +57,11 @@ public class CheckoutController {
         model.addAttribute("total", cartService.getTotal());
         model.addAttribute("session", checkoutSession);
         return "checkout-address";
+    }
+    
+    @GetMapping("/address")
+    public String showCheckoutAddress(Model model) {
+        return showCheckout(model);
     }
     
     @PostMapping("/address")
@@ -125,7 +141,7 @@ public class CheckoutController {
     
     // Final step: Place Order
     @PostMapping("/place-order")
-    public String placeOrder(Model model) {
+    public String placeOrder(Model model, Authentication authentication) {
         
         if (checkoutSession.getCurrentStep() < 3) {
             return "redirect:/checkout";
@@ -137,8 +153,10 @@ public class CheckoutController {
             return "redirect:/cart";
         }
         
-        // Use first test user for demo
-        User user = userRepository.findById(1L).orElseThrow();
+        // Get currently logged-in user
+        String email = authentication.getName();
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
         
         // Create order items
         List<OrderItem> orderItems = new ArrayList<>();

@@ -1,18 +1,22 @@
 package com.aerloki.personal.project.Personal.Project.service;
 
-import com.aerloki.personal.project.Personal.Project.model.CartItem;
-import com.aerloki.personal.project.Personal.Project.model.Product;
-import org.springframework.stereotype.Service;
-import org.springframework.web.context.annotation.SessionScope;
-
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.stereotype.Service;
+import org.springframework.web.context.annotation.SessionScope;
+
+import com.aerloki.personal.project.Personal.Project.model.CartItem;
+import com.aerloki.personal.project.Personal.Project.model.Product;
+
 @Service
 @SessionScope
-public class CartService {
+public class CartService implements Serializable {
+    
+    private static final long serialVersionUID = 1L;
     
     private List<CartItem> cartItems = new ArrayList<>();
     

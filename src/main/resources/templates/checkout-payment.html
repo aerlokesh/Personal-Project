@@ -287,6 +287,7 @@
         </div>
         
         <form action="/checkout/payment" method="post" id="paymentForm">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
             <!-- Credit Card -->
             <div class="payment-option">
                 <input type="radio" id="creditCard" name="paymentMethod" value="CREDIT_CARD" 

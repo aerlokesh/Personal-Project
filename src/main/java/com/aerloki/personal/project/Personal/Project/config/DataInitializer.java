@@ -1,31 +1,37 @@
 package com.aerloki.personal.project.Personal.Project.config;
 
+import java.math.BigDecimal;
+
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.crypto.password.PasswordEncoder;
+
 import com.aerloki.personal.project.Personal.Project.model.Product;
 import com.aerloki.personal.project.Personal.Project.model.User;
 import com.aerloki.personal.project.Personal.Project.repository.ProductRepository;
 import com.aerloki.personal.project.Personal.Project.repository.UserRepository;
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-
-import java.math.BigDecimal;
 
 @Configuration
 public class DataInitializer {
     
     @Bean
     CommandLineRunner initDatabase(ProductRepository productRepository, 
-                                   UserRepository userRepository) {
+                                   UserRepository userRepository,
+                                   PasswordEncoder passwordEncoder) {
         return args -> {
-            // Create fake users
+            // Create fake users with encoded passwords
             if (userRepository.count() == 0) {
-                userRepository.save(new User(null, "john.doe@example.com", "John Doe", "password123", 
+                userRepository.save(new User(null, "john.doe@example.com", "John Doe", 
+                        passwordEncoder.encode("password123"), 
                         "123 Main St, Seattle, WA", "206-555-0100"));
-                userRepository.save(new User(null, "jane.smith@example.com", "Jane Smith", "password123", 
+                userRepository.save(new User(null, "jane.smith@example.com", "Jane Smith", 
+                        passwordEncoder.encode("password123"), 
                         "456 Oak Ave, Portland, OR", "503-555-0200"));
-                userRepository.save(new User(null, "bob.jones@example.com", "Bob Jones", "password123", 
+                userRepository.save(new User(null, "bob.jones@example.com", "Bob Jones", 
+                        passwordEncoder.encode("password123"), 
                         "789 Pine Rd, San Francisco, CA", "415-555-0300"));
-                System.out.println("✓ Created 3 test users");
+                System.out.println("✓ Created 3 test users with encoded passwords");
             }
             
             // Create fake products with ASINs
