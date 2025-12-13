@@ -57,6 +57,70 @@
             font-size: 14px;
         }
         
+        .nav-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .nav-dropdown-content {
+            display: none;
+            position: absolute;
+            right: 0;
+            background-color: white;
+            min-width: 300px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+            border-radius: 4px;
+            z-index: 1000;
+            margin-top: 10px;
+        }
+        
+        .nav-dropdown:hover .nav-dropdown-content {
+            display: block;
+        }
+        
+        .dropdown-header {
+            padding: 15px;
+            border-bottom: 1px solid #ddd;
+            font-weight: bold;
+            color: #131921;
+            font-size: 14px;
+        }
+        
+        .dropdown-item {
+            padding: 12px 15px;
+            color: #131921;
+            text-decoration: none;
+            display: block;
+            border-bottom: 1px solid #f3f3f3;
+            font-size: 13px;
+        }
+        
+        .dropdown-item:hover {
+            background-color: #f3f3f3;
+        }
+        
+        .dropdown-item:last-child {
+            border-bottom: none;
+        }
+        
+        .dropdown-footer {
+            padding: 12px 15px;
+            background: #f7f7f7;
+            border-radius: 0 0 4px 4px;
+        }
+        
+        .dropdown-footer a {
+            color: #007185;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 500;
+        }
+        
+        .dropdown-footer a:hover {
+            color: #C7511F;
+            text-decoration: underline;
+        }
+        
         .container {
             max-width: 1400px;
             margin: 0 auto;
@@ -185,11 +249,31 @@
             <input type="text" placeholder="Search products..." id="searchInput">
             <button onclick="searchProducts()">Search</button>
         </div>
-        <a href="/orders" style="color: white; text-decoration: none; margin-right: 20px;">
-            <div class="user-info">
-                📦 Orders
+        <div class="nav-dropdown" style="margin-right: 20px;">
+            <a href="/orders" style="color: white; text-decoration: none;">
+                <div class="user-info" style="cursor: pointer;">
+                    📦 Returns<br>&nbsp;&nbsp;&nbsp;&nbsp;&amp; Orders
+                </div>
+            </a>
+            <div class="nav-dropdown-content">
+                <div class="dropdown-header">Your Orders</div>
+                <a href="/orders" class="dropdown-item">
+                    <strong>View All Orders</strong><br>
+                    <span style="font-size: 12px; color: #565959;">Track packages & view order history</span>
+                </a>
+                <a href="/orders" class="dropdown-item">
+                    <strong>Not Yet Shipped</strong><br>
+                    <span style="font-size: 12px; color: #565959;">View pending orders</span>
+                </a>
+                <a href="/orders" class="dropdown-item">
+                    <strong>Cancelled Orders</strong><br>
+                    <span style="font-size: 12px; color: #565959;">View cancelled items</span>
+                </a>
+                <div class="dropdown-footer">
+                    <a href="/orders">View all orders →</a>
+                </div>
             </div>
-        </a>
+        </div>
         <a href="/cart" style="color: white; text-decoration: none;">
             <div class="user-info">
                 🛒 Cart
