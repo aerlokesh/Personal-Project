@@ -1,123 +1,415 @@
 # Amazon-like E-commerce Application
 
-A Spring Boot e-commerce application with PostgreSQL database that mimics Amazon's basic functionality.
+A full-featured Spring Boot e-commerce application with LocalStack S3 image storage, Redis caching, ELK stack logging, and comprehensive checkout flow.
 
-## Features
+## 🚀 Features
 
-- **Product Catalog**: Browse products with fake ASINs
-- **User Management**: Pre-populated with test users
-- **Product Categories**: Electronics, Books, Home & Kitchen, Sports, Fashion, Beauty
-- **REST API**: Full CRUD operations for products
-- **Responsive UI**: Amazon-inspired frontend with Thymeleaf
+### Core Functionality
+- **Product Catalog**: 35+ products across 12 categories with images
+- **Shopping Cart**: Add/remove items, update quantities
+- **Checkout Flow**: Multi-step checkout (shipping, payment, review)
+- **Order Management**: Complete order history and tracking
+- **Search**: Full-text product search
+- **User Management**: Pre-populated test users
 
-## Tech Stack
+### Advanced Features
+- **LocalStack S3**: Local AWS S3 for image storage (35 unique colored SVG images)
+- **Redis Caching**: 10-minute TTL for fast page loads
+- **ELK Stack Integration**: Elasticsearch, Logstash, Kibana for log management
+- **Responsive UI**: Amazon-inspired design with Thymeleaf
 
+## 🛠 Tech Stack
+
+**Backend**
 - Spring Boot 4.0.0
-- PostgreSQL
 - Spring Data JPA
-- Thymeleaf
-- Lombok
-- Java 17
+- Spring Security
+- Spring Data Redis
+- Spring Elasticsearch
+- AWS SDK for S3
 
-## Prerequisites
+**Database & Storage**
+- PostgreSQL (primary database)
+- Redis (caching layer)
+- LocalStack S3 (image storage)
+
+**Monitoring & Logging**
+- Elasticsearch 8.11.0
+- Logstash 8.11.0
+- Kibana 8.11.0
+- Logstash Logback Encoder
+
+**Frontend**
+- Thymeleaf
+- HTML5/CSS3
+- Vanilla JavaScript
+
+## 📋 Prerequisites
 
 1. **Java 17** or higher
-2. **PostgreSQL** installed and running
-3. **Gradle** (included via wrapper)
+2. **PostgreSQL** installed and running locally
+3. **Docker & Docker Compose** (for LocalStack, Redis, ELK)
+4. **Gradle** (included via wrapper)
 
-## Database Setup
+## 🔧 Setup & Installation
 
-1. Start PostgreSQL service:
-   ```bash
-   # macOS
-   brew services start postgresql
-   
-   # Linux
-   sudo systemctl start postgresql
-   ```
+### 1. Database Setup
 
-2. Create the database:
-   ```bash
-   psql -U postgres
-   CREATE DATABASE ecommerce;
-   \q
-   ```
+Create PostgreSQL database:
+```bash
+psql -U postgres
+CREATE DATABASE ecommerce;
+CREATE USER aerloki WITH PASSWORD '';
+GRANT ALL PRIVILEGES ON DATABASE ecommerce TO aerloki;
+\q
+```
 
-3. Update database credentials in `src/main/resources/application.properties` if needed:
-   ```properties
-   spring.datasource.username=postgres
-   spring.datasource.password=postgres
-   ```
+### 2. Start Docker Services
 
-## Running the Application
+Start all services (LocalStack S3, Redis, ELK stack):
+```bash
+docker-compose up -d
+```
 
-1. Build the project:
-   ```bash
-   ./gradlew clean build
-   ```
+Verify services are running:
+```bash
+docker ps
+```
 
-2. Run the application:
-   ```bash
-   ./gradlew bootRun
-   ```
+You should see:
+- `localstack` (port 4566) - S3 storage
+- `redis` (port 6379) - Caching
+- `elasticsearch` (port 9200) - Search & logs
+- `logstash` (port 5000) - Log aggregation
+- `kibana` (port 5601) - Log visualization
 
-3. Access the application:
-   - **Web UI**: http://localhost:8081
-   - **REST API**: http://localhost:8081/api/products
+### 3. Run the Application
 
-## Sample Data
+```bash
+./gradlew bootRun
+```
 
-The application automatically initializes with:
+Wait for:
+```
+✓ Created S3 bucket: product-images
+✓ Uploaded 35 product images to S3
+✓ Created 35 products with LocalStack S3 images
+```
 
-### Users (3 test users)
-- john.doe@example.com
-- jane.smith@example.com
-- bob.jones@example.com
+### 4. Access the Application
 
-### Products (12 items with fake ASINs)
-- Electronics: Echo Dot, Fire TV Stick, Kindle
-- Books: Atomic Habits, The Midnight Library
-- Home & Kitchen: Instant Pot, Ninja Air Fryer
-- Sports: YETI Rambler, Resistance Bands
-- Fashion: Levi's Jeans, Leather Handbag
-- Beauty: CeraVe Moisturizing Cream
+- **Web Application**: http://localhost:8081
+- **LocalStack S3**: http://localhost:4566
+- **Elasticsearch**: http://localhost:9200
+- **Kibana**: http://localhost:5601
+- **Redis**: localhost:6379
 
-## API Endpoints
+## 📦 Docker Services
 
-### Products
-- `GET /api/products` - Get all available products
-- `GET /api/products/{id}` - Get product by ID
-- `GET /api/products/asin/{asin}` - Get product by ASIN
-- `GET /api/products/category/{category}` - Get products by category
-- `GET /api/products/search?keyword={keyword}` - Search products
+### LocalStack S3 (Image Storage)
+- **Port**: 4566
+- **Bucket**: `product-images`
+- **Images**: 35 colored SVG placeholders
+- **URL Format**: `http://localhost:4566/product-images/product-{1-35}.svg`
 
-## Project Structure
+### Redis (Caching)
+- **Port**: 6379
+- **TTL**: 10 minutes
+- **Cached Methods**: 
+  - `getAllProducts()`
+  - `getAvailableProducts()`
+  - `getProductById()`
+  - `getProductByAsin()`
+  - `getProductsByCategory()`
+  - `searchProducts()`
+
+### ELK Stack (Logging)
+- **Elasticsearch**: Port 9200
+- **Logstash**: Port 5000
+- **Kibana**: Port 5601
+- **Log Format**: JSON with timestamps
+- **Features**: Real-time log streaming and search
+
+## 🗂 Project Structure
 
 ```
 src/
 ├── main/
-│   ├── java/
-│   │   └── com/aerloki/personal/project/Personal/Project/
-│   │       ├── model/          # Entity classes
-│   │       ├── repository/     # JPA repositories
-│   │       ├── service/        # Business logic
-│   │       ├── controller/     # REST & Web controllers
-│   │       └── config/         # Configuration & data initializer
+│   ├── java/com/aerloki/personal/project/Personal/Project/
+│   │   ├── model/
+│   │   │   ├── Product.java          # Product entity
+│   │   │   ├── User.java             # User entity
+│   │   │   ├── Order.java            # Order entity
+│   │   │   ├── OrderItem.java        # Order items
+│   │   │   ├── CartItem.java         # Shopping cart items
+│   │   │   └── CheckoutSession.java  # Checkout state
+│   │   ├── repository/
+│   │   │   ├── ProductRepository.java
+│   │   │   ├── UserRepository.java
+│   │   │   └── OrderRepository.java
+│   │   ├── service/
+│   │   │   ├── ProductService.java   # @Cacheable methods
+│   │   │   ├── CartService.java
+│   │   │   ├── OrderService.java
+│   │   │   └── S3Service.java        # LocalStack S3 operations
+│   │   ├── controller/
+│   │   │   ├── HomeController.java
+│   │   │   ├── ProductController.java
+│   │   │   ├── CartController.java
+│   │   │   ├── CheckoutController.java
+│   │   │   └── OrderController.java
+│   │   └── config/
+│   │       ├── DataInitializer.java     # DB initialization
+│   │       ├── S3Config.java            # LocalStack S3 config
+│   │       ├── S3ImageInitializer.java  # S3 image upload
+│   │       ├── RedisConfig.java         # Redis cache config
+│   │       └── SecurityConfig.java
 │   └── resources/
 │       ├── application.properties
-│       ├── templates/          # Thymeleaf templates
-│       └── static/             # Static resources
+│       ├── logback-spring.xml         # Logstash logging config
+│       └── templates/                 # Thymeleaf HTML templates
+│           ├── index.html
+│           ├── cart.html
+│           ├── checkout-*.html
+│           └── orders.html
 ```
 
-## Development
+## 🎯 Key Features Explained
 
-The application uses:
-- `spring.jpa.hibernate.ddl-auto=create-drop` - Database schema recreated on each run
-- Auto-initialization with sample data via `DataInitializer.java`
+### LocalStack S3 Image Storage
 
-## Notes
+Images are stored in a local S3-compatible service (LocalStack):
+- Automatically creates `product-images` bucket on startup
+- Uploads 35 unique colored SVG images
+- Each image displays "Product {number}" with a different background color
+- No external dependencies - all images served locally
 
-- Default port: 8081 (configurable in application.properties)
-- Database is recreated on each application restart
-- CORS enabled for REST API endpoints
-- Security features are currently disabled for demo purposes
+**Verify S3 images**:
+```bash
+# View an image
+curl http://localhost:4566/product-images/product-1.svg
+
+# List all images
+aws --endpoint-url=http://localhost:4566 s3 ls s3://product-images/
+```
+
+### Redis Caching
+
+Reduces database load and improves page performance:
+- **Cache Keys**: Product queries cached for 10 minutes
+- **Eviction**: Automatic after TTL expires
+- **Benefit**: Subsequent page loads are nearly instant
+
+**Monitor cache**:
+```bash
+# View cached keys
+docker exec -i redis redis-cli KEYS "*"
+
+# Clear cache
+docker exec -i redis redis-cli FLUSHALL
+```
+
+### ELK Stack Logging
+
+All application logs are sent to Elasticsearch:
+1. **Logback** captures logs in JSON format
+2. **Logstash** receives logs via TCP (port 5000)
+3. **Elasticsearch** stores and indexes logs
+4. **Kibana** provides search and visualization
+
+**Access Kibana**: http://localhost:5601
+
+## 📊 Sample Data
+
+### Products (35 items)
+- **Electronics**: Speakers, streaming devices, e-readers, headphones, smart watches, power banks, mice
+- **Books**: Self-help, fiction, psychology, history
+- **Home & Kitchen**: Pressure cookers, blenders, coffee makers, air fryers, robot vacuums
+- **Sports & Outdoors**: Water bottles, yoga mats, fitness trackers, resistance bands
+- **Fashion**: Jeans, handbags, sneakers, sunglasses, jackets, watches
+- **Beauty & Personal Care**: Moisturizers, hair dryers, toothbrushes, serums
+- **Gaming**: Consoles (PS5, Switch), controllers, headsets
+- **Toys & Games**: LEGO sets, puzzles, board games
+- **Pet Supplies**: Automatic feeders, grooming tools
+- **Tools**: Drills, vacuums
+- **Automotive**: Dash cams, floor mats
+- **Office**: Standing desks, ergonomic chairs
+
+### Users (3 test accounts)
+- john.doe@example.com
+- jane.smith@example.com
+- bob.jones@example.com
+
+## 🚦 Starting & Stopping
+
+### Start All Services
+```bash
+# Start Docker services
+docker-compose up -d
+
+# Start application
+./gradlew bootRun
+```
+
+### Stop All Services
+```bash
+# Stop application (Ctrl+C in terminal)
+
+# Stop Docker services
+docker-compose down
+```
+
+### Quick Start Script
+```bash
+# Use the provided script
+./start-all.sh
+```
+
+### Quick Stop Script
+```bash
+./stop-all.sh
+```
+
+## 🔍 Troubleshooting
+
+### LocalStack S3 Not Connecting
+```bash
+# Check LocalStack status
+docker logs localstack
+
+# Restart LocalStack
+docker-compose restart localstack
+```
+
+### Redis Connection Issues
+```bash
+# Check Redis status
+docker exec -i redis redis-cli PING
+# Expected output: PONG
+
+# Restart Redis
+docker-compose restart redis
+```
+
+### Clear Cache After Changes
+```bash
+# Clear Redis cache
+docker exec -i redis redis-cli FLUSHALL
+
+# Clear product data
+psql -h localhost -U aerloki -d ecommerce -c "DELETE FROM order_items; DELETE FROM orders; DELETE FROM products;"
+```
+
+### View Application Logs
+```bash
+# Via Kibana
+open http://localhost:5601
+
+# Via Docker
+docker logs -f logstash
+```
+
+## 🌐 API Endpoints
+
+### Products
+- `GET /api/products` - All available products
+- `GET /api/products/{id}` - Product by ID
+- `GET /api/products/asin/{asin}` - Product by ASIN
+- `GET /api/products/category/{category}` - Products by category
+- `GET /api/products/search?keyword={keyword}` - Search products
+
+### Web Pages
+- `GET /` - Home page with products
+- `GET /cart` - Shopping cart
+- `GET /checkout` - Checkout flow (address, payment, review)
+- `GET /orders` - Order history
+- `GET /orders/{id}` - Order details
+
+## 🔐 Security Note
+
+Current configuration has security disabled for demo purposes. In production, you should:
+1. Enable Spring Security authentication
+2. Add proper user authentication
+3. Secure API endpoints
+4. Use HTTPS
+5. Implement proper session management
+
+## 📝 Configuration
+
+### Application Ports
+- Application: **8081**
+- LocalStack S3: **4566**
+- PostgreSQL: **5432**
+- Redis: **6379**
+- Elasticsearch: **9200**
+- Logstash: **5000**
+- Kibana: **5601**
+
+### Database
+- **URL**: jdbc:postgresql://localhost:5432/ecommerce
+- **Username**: aerloki
+- **Password**: (empty)
+
+### Redis Cache
+- **Host**: localhost
+- **Port**: 6379
+- **TTL**: 600000ms (10 minutes)
+
+## 🧪 Testing
+
+Access different features:
+1. **Browse Products**: http://localhost:8081
+2. **Add to Cart**: Click "Add to Cart" on any product
+3. **View Cart**: Click cart icon in header
+4. **Checkout**: Complete multi-step checkout process
+5. **View Orders**: Click "Returns & Orders" in header
+
+## 📈 Performance Features
+
+1. **Redis Caching**: Product queries cached for 10 minutes
+2. **Connection Pooling**: HikariCP for database connections
+3. **LocalStack S3**: Fast local image serving
+4. **Lazy Loading**: JPA entities optimized with proper fetch strategies
+
+## 🐛 Known Issues
+
+- LocalStack S3 images require the LocalStack container to be running
+- Redis cache should be cleared after database changes
+- Some Spring Data Redis warnings (expected with multi-module setup)
+
+## 📚 Additional Documentation
+
+- `SETUP_GUIDE.md` - Detailed setup instructions
+- `ELK_SETUP_GUIDE.md` - ELK stack configuration
+- `ELASTICSEARCH_SEARCH_GUIDE.md` - Elasticsearch usage
+- `QUICK_START.md` - Quick start guide
+
+## 🤝 Contributing
+
+This is a personal learning project demonstrating:
+- Spring Boot best practices
+- Microservices patterns (S3, Redis, ELK)
+- E-commerce application architecture
+- RESTful API design
+
+## 📄 License
+
+This is a demo project for educational purposes.
+
+## 🎓 Learning Objectives
+
+This project demonstrates:
+- **Spring Boot** application structure
+- **LocalStack** for local AWS service emulation
+- **Redis** for application caching
+- **Docker Compose** for multi-container setup
+- **ELK Stack** for centralized logging
+- **JPA/Hibernate** for database operations
+- **Thymeleaf** for server-side rendering
+- **RESTful API** design patterns
+
+---
+
+**Author**: aerloki  
+**Created**: 2025  
+**Version**: 2.0.0 (with LocalStack S3 & Redis caching)

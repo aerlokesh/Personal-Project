@@ -288,8 +288,7 @@
             <div class="product-card" th:each="product : ${products}">
                 <img th:src="${product.imageUrl}" 
                      th:alt="${product.name}" 
-                     class="product-image"
-                     onerror="this.src='https://via.placeholder.com/200x200?text=No+Image'">
+                     class="product-image">
                 <div class="product-category" th:text="${product.category}">Category</div>
                 <div class="product-name" th:text="${product.name}">Product Name</div>
                 <div class="product-description" th:text="${product.description}">Product description</div>

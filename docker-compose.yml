@@ -41,8 +41,34 @@ services:
     networks:
       - elk
 
+  redis:
+    image: redis:7-alpine
+    container_name: redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    command: redis-server --appendonly yes
+    networks:
+      - elk
+
+  localstack:
+    image: localstack/localstack:latest
+    container_name: localstack
+    ports:
+      - "4566:4566"
+    environment:
+      - SERVICES=s3
+      - DEBUG=0
+    networks:
+      - elk
+
 volumes:
   elasticsearch-data:
+    driver: local
+  redis-data:
+    driver: local
+  localstack-data:
     driver: local
 
 networks:
