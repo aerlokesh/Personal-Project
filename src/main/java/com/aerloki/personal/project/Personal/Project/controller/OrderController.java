@@ -33,7 +33,7 @@ public class OrderController {
     
     @GetMapping("/{orderId}")
     public String viewOrderDetails(@PathVariable Long orderId, Model model) {
-        Order order = orderRepository.findById(orderId)
+        Order order = orderRepository.findByIdWithItems(orderId)
                 .orElseThrow(() -> new RuntimeException("Order not found"));
         model.addAttribute("order", order);
         return "order-details";
