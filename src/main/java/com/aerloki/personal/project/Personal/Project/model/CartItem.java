@@ -3,6 +3,8 @@ package com.aerloki.personal.project.Personal.Project.model;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 public class CartItem implements Serializable {
     
     private static final long serialVersionUID = 1L;
@@ -64,6 +66,7 @@ public class CartItem implements Serializable {
         this.imageUrl = imageUrl;
     }
     
+    @JsonIgnore
     public BigDecimal getSubtotal() {
         return price.multiply(BigDecimal.valueOf(quantity));
     }

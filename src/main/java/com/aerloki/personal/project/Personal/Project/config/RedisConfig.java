@@ -13,6 +13,8 @@ import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 import java.time.Duration;
+import java.util.HashMap;
+import java.util.Map;
 
 @Configuration
 @EnableCaching
@@ -37,8 +39,9 @@ public class RedisConfig {
 
     @Bean
     public CacheManager cacheManager(RedisConnectionFactory connectionFactory) {
-        RedisCacheConfiguration config = RedisCacheConfiguration.defaultCacheConfig()
-            .entryTtl(Duration.ofMinutes(10)) // Cache for 10 minutes
+        // Default cache configuration
+        RedisCacheConfiguration defaultConfig = RedisCacheConfiguration.defaultCacheConfig()
+            .entryTtl(Duration.ofMinutes(10))
             .serializeKeysWith(
                 RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer())
             )
@@ -47,8 +50,30 @@ public class RedisConfig {
             )
             .disableCachingNullValues();
 
+        // Cache-specific configurations with different TTLs
+        Map<String, RedisCacheConfiguration> cacheConfigurations = new HashMap<>();
+        
+        // Product catalog - cache for 30 minutes (frequently accessed, changes rarely)
+        cacheConfigurations.put("products", defaultConfig.entryTtl(Duration.ofMinutes(30)));
+        
+        // User data - cache for 15 minutes
+        cacheConfigurations.put("users", defaultConfig.entryTtl(Duration.ofMinutes(15)));
+        
+        // User sessions (last login email) - cache for 7 days
+        cacheConfigurations.put("userSessions", defaultConfig.entryTtl(Duration.ofDays(7)));
+        
+        // Shopping cart - cache for 24 hours
+        cacheConfigurations.put("carts", defaultConfig.entryTtl(Duration.ofHours(24)));
+        
+        // Orders - cache for 1 hour
+        cacheConfigurations.put("orders", defaultConfig.entryTtl(Duration.ofHours(1)));
+        
+        // Checkout sessions - cache for 1 hour
+        cacheConfigurations.put("checkoutSessions", defaultConfig.entryTtl(Duration.ofHours(1)));
+
         return RedisCacheManager.builder(connectionFactory)
-            .cacheDefaults(config)
+            .cacheDefaults(defaultConfig)
+            .withInitialCacheConfigurations(cacheConfigurations)
             .transactionAware()
             .build();
     }

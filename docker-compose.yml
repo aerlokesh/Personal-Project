@@ -52,6 +52,18 @@ services:
     networks:
       - elk
 
+  redis-insight:
+    image: redis/redisinsight:latest
+    container_name: redis-insight
+    depends_on:
+      - redis
+    ports:
+      - "5540:5540"
+    volumes:
+      - redis-insight-data:/data
+    networks:
+      - elk
+
   localstack:
     image: localstack/localstack:latest
     container_name: localstack
@@ -67,6 +79,8 @@ volumes:
   elasticsearch-data:
     driver: local
   redis-data:
+    driver: local
+  redis-insight-data:
     driver: local
   localstack-data:
     driver: local

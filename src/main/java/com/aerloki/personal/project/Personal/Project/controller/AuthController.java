@@ -1,5 +1,7 @@
 package com.aerloki.personal.project.Personal.Project.controller;
 
+import java.security.Principal;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -8,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.aerloki.personal.project.Personal.Project.service.UserService;
+import com.aerloki.personal.project.Personal.Project.service.UserSessionService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -16,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 public class AuthController {
     
     private final UserService userService;
+    private final UserSessionService userSessionService;
     
     @GetMapping("/signup")
     public String showSignupForm() {
@@ -60,6 +64,25 @@ public class AuthController {
         if (error != null) {
             model.addAttribute("error", "Invalid email or password");
         }
+        
+        // Pre-fill the last login email for better user experience
+        String lastEmail = userSessionService.getLastLoginEmail();
+        if (lastEmail != null) {
+            model.addAttribute("lastEmail", lastEmail);
+        }
+        
         return "signin";
+    }
+    
+    /**
+     * Post-login handler to save the email for next login
+     */
+    @GetMapping("/login-success")
+    public String handleLoginSuccess(Principal principal) {
+        if (principal != null) {
+            String email = principal.getName();
+            userSessionService.saveLastLoginEmail(email);
+        }
+        return "redirect:/";
     }
 }
