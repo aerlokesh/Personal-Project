@@ -22,6 +22,7 @@ public class UserService implements UserDetailsService {
     
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final UserCacheService userCacheService;
     
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
@@ -56,12 +57,28 @@ public class UserService implements UserDetailsService {
         
         User savedUser = userRepository.save(user);
         
+        // 💾 Cache the newly registered user
+        userCacheService.saveUserToCache(savedUser);
+        
         System.out.println("  User saved successfully with ID: " + savedUser.getId());
         return savedUser;
     }
     
     public Optional<User> findByEmail(String email) {
-        return userRepository.findByEmail(email);
+        // 🔍 Step 1: Check Redis cache first (avoids database query)
+        Optional<User> cachedUser = userCacheService.getUserFromCache(email);
+        if (cachedUser.isPresent()) {
+            // ✅ Found in cache - no database query needed!
+            return cachedUser;
+        }
+        
+        // ❌ Not in cache - query database
+        Optional<User> userFromDb = userRepository.findByEmail(email);
+        
+        // 💾 If found in database, save to cache for next time
+        userFromDb.ifPresent(userCacheService::saveUserToCache);
+        
+        return userFromDb;
     }
     
     public User getUserById(Long id) {
