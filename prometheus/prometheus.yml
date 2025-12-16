@@ -1,0 +1,22 @@
+global:
+  scrape_interval: 5s
+  evaluation_interval: 5s
+
+scrape_configs:
+  # Main Spring Boot Actuator metrics
+  - job_name: 'spring-boot-app'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['host.docker.internal:8081']
+        labels:
+          application: 'Personal-Project'
+          environment: 'dev'
+  
+  # Custom cache metrics endpoint
+  - job_name: 'cache-metrics'
+    metrics_path: '/metrics/cache'
+    static_configs:
+      - targets: ['host.docker.internal:8081']
+        labels:
+          application: 'Personal-Project'
+          environment: 'dev'

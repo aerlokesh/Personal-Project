@@ -131,6 +131,37 @@ services:
     networks:
       - elk
 
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus-data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+    networks:
+      - elk
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    depends_on:
+      - prometheus
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./grafana/dashboards:/etc/grafana/provisioning/dashboards
+      - ./grafana/datasources:/etc/grafana/provisioning/datasources
+    networks:
+      - elk
+
 volumes:
   elasticsearch-data:
     driver: local
@@ -139,6 +170,10 @@ volumes:
   redis-insight-data:
     driver: local
   localstack-data:
+    driver: local
+  prometheus-data:
+    driver: local
+  grafana-data:
     driver: local
 
 networks:

@@ -3,7 +3,6 @@ package com.aerloki.personal.project.Personal.Project.service;
 import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,10 +23,13 @@ public class ProductCacheService {
     
     private final RedisTemplate<String, Object> redisTemplate;
     private final ObjectMapper objectMapper;
+    private final CacheMetricsService metricsService;
     
-    public ProductCacheService(RedisTemplate<String, Object> redisTemplate, ObjectMapper objectMapper) {
+    public ProductCacheService(RedisTemplate<String, Object> redisTemplate, ObjectMapper objectMapper,
+                              CacheMetricsService metricsService) {
         this.redisTemplate = redisTemplate;
         this.objectMapper = objectMapper;
+        this.metricsService = metricsService;
     }
     
     /**
@@ -38,10 +40,12 @@ public class ProductCacheService {
         try {
             String cachedProduct = (String) redisTemplate.opsForValue().get(key);
             if (cachedProduct != null) {
+                metricsService.recordProductCacheHit(); // 📊 Record cache hit
                 log.info("✅ CACHE HIT: Product ID {} found in Redis cache", productId);
                 Product product = objectMapper.readValue(cachedProduct, Product.class);
                 return Optional.of(product);
             }
+            metricsService.recordProductCacheMiss(); // 📊 Record cache miss (DB query coming)
             log.info("❌ CACHE MISS: Product ID {} not found in Redis cache", productId);
             return Optional.empty();
         } catch (Exception e) {
@@ -57,11 +61,13 @@ public class ProductCacheService {
         try {
             String cachedProducts = (String) redisTemplate.opsForValue().get(ALL_PRODUCTS_KEY);
             if (cachedProducts != null) {
+                metricsService.recordAllProductsCacheHit(); // 📊 Record cache hit
                 log.info("✅ CACHE HIT: All products found in Redis cache");
                 List<Product> products = objectMapper.readValue(cachedProducts, 
                     new TypeReference<List<Product>>() {});
                 return Optional.of(products);
             }
+            metricsService.recordAllProductsCacheMiss(); // 📊 Record cache miss (DB query coming)
             log.info("❌ CACHE MISS: All products not found in Redis cache");
             return Optional.empty();
         } catch (Exception e) {

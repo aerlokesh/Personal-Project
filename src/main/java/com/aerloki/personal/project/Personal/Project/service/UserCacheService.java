@@ -20,10 +20,13 @@ public class UserCacheService {
     
     private final RedisTemplate<String, Object> redisTemplate;
     private final ObjectMapper objectMapper;
+    private final CacheMetricsService metricsService;
     
-    public UserCacheService(RedisTemplate<String, Object> redisTemplate, ObjectMapper objectMapper) {
+    public UserCacheService(RedisTemplate<String, Object> redisTemplate, ObjectMapper objectMapper, 
+                           CacheMetricsService metricsService) {
         this.redisTemplate = redisTemplate;
         this.objectMapper = objectMapper;
+        this.metricsService = metricsService;
     }
     
     /**
@@ -34,10 +37,12 @@ public class UserCacheService {
         try {
             String cachedUser = (String) redisTemplate.opsForValue().get(key);
             if (cachedUser != null) {
+                metricsService.recordUserCacheHit(); // 📊 Record cache hit
                 log.info("✅ CACHE HIT: User found in Redis cache for email: {}", email);
                 User user = objectMapper.readValue(cachedUser, User.class);
                 return Optional.of(user);
             }
+            metricsService.recordUserCacheMiss(); // 📊 Record cache miss (DB query coming)
             log.info("❌ CACHE MISS: User not found in Redis cache for email: {}", email);
             return Optional.empty();
         } catch (Exception e) {
