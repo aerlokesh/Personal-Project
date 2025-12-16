@@ -7,6 +7,10 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+
 /**
  * Redis Configuration - Using Redis as a central cache/data store only
  * No Spring Cache abstraction - direct RedisTemplate usage for full control
@@ -34,5 +38,18 @@ public class RedisConfig {
         
         template.afterPropertiesSet();
         return template;
+    }
+    
+    /**
+     * ObjectMapper bean for JSON serialization/deserialization in caching
+     */
+    @Bean
+    public ObjectMapper objectMapper() {
+        ObjectMapper mapper = new ObjectMapper();
+        // Support for Java 8 date/time types
+        mapper.registerModule(new JavaTimeModule());
+        // Write dates as timestamps
+        mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+        return mapper;
     }
 }
