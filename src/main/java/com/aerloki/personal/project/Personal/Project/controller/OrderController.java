@@ -13,6 +13,7 @@ import com.aerloki.personal.project.Personal.Project.model.Order;
 import com.aerloki.personal.project.Personal.Project.model.User;
 import com.aerloki.personal.project.Personal.Project.repository.OrderRepository;
 import com.aerloki.personal.project.Personal.Project.repository.UserRepository;
+import com.aerloki.personal.project.Personal.Project.service.MaterializedViewService;
 
 @Controller
 @RequestMapping("/orders")
@@ -20,10 +21,12 @@ public class OrderController {
     
     private final OrderRepository orderRepository;
     private final UserRepository userRepository;
+    private final MaterializedViewService viewService;
     
-    public OrderController(OrderRepository orderRepository, UserRepository userRepository) {
+    public OrderController(OrderRepository orderRepository, UserRepository userRepository, MaterializedViewService viewService) {
         this.orderRepository = orderRepository;
         this.userRepository = userRepository;
+        this.viewService = viewService;
     }
     
     @GetMapping
@@ -35,6 +38,11 @@ public class OrderController {
         
         List<Order> orders = orderRepository.findByUserId(user.getId());
         model.addAttribute("orders", orders);
+        
+        // Add user order summary from materialized view (much faster than aggregating orders)
+        viewService.getUserOrderSummary(user.getId())
+                .ifPresent(summary -> model.addAttribute("orderSummary", summary));
+        
         return "orders";
     }
     

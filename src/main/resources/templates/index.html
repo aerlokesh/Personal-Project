@@ -528,6 +528,44 @@
         
         <h1>Featured Products</h1>
         
+        <!-- TRENDING PRODUCTS FROM MATERIALIZED VIEW -->
+        <div th:if="${popularProducts != null and !popularProducts.isEmpty()}" style="background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #DDD;">
+            <h2 style="color: #0F1111; font-size: 20px; margin-bottom: 15px; display: flex; align-items: center; gap: 8px;">
+                🔥 Trending Now <span style="font-size: 14px; color: #565959; font-weight: normal;">(from last 30 days)</span>
+            </h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px;">
+                <div th:each="product : ${popularProducts}" style="border: 1px solid #DDD; padding: 12px; border-radius: 8px; background: #F7F7F7;">
+                    <img th:src="${product.imageUrl}" th:alt="${product.name}" style="width: 100%; height: 150px; object-fit: contain; margin-bottom: 8px;">
+                    <div style="font-size: 13px; color: #0F1111; margin-bottom: 5px; min-height: 32px; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;" th:text="${product.name}">Product</div>
+                    <div style="font-size: 18px; color: #B12704; font-weight: 500; margin-bottom: 5px;">
+                        $<span th:text="${#numbers.formatDecimal(product.price, 1, 2)}">0.00</span>
+                    </div>
+                    <div style="font-size: 11px; color: #007600; font-weight: 500;">
+                        🔥 <span th:text="${product.orderCount}">0</span> orders | <span th:text="${product.totalQuantitySold}">0</span> sold
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- CATEGORY STATS FROM MATERIALIZED VIEW -->
+        <div th:if="${categoryStats != null and !categoryStats.isEmpty()}" style="background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #DDD;">
+            <h2 style="color: #0F1111; font-size: 20px; margin-bottom: 15px;">📊 Shop by Category</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px;">
+                <a th:each="stat : ${categoryStats}" th:href="@{/(category=${stat.category})}" style="text-decoration: none; border: 1px solid #DDD; padding: 15px; border-radius: 8px; transition: all 0.2s; display: block;" onmouseover="this.style.boxShadow='0 2px 8px rgba(0,0,0,0.1)'" onmouseout="this.style.boxShadow='none'">
+                    <div style="font-size: 16px; color: #0F1111; font-weight: 500; margin-bottom: 8px;" th:text="${stat.category}">Category</div>
+                    <div style="font-size: 12px; color: #565959; margin-bottom: 4px;">
+                        <span th:text="${stat.productCount}">0</span> products
+                    </div>
+                    <div style="font-size: 12px; color: #007185;">
+                        From $<span th:text="${#numbers.formatDecimal(stat.minPrice, 1, 2)}">0</span> to $<span th:text="${#numbers.formatDecimal(stat.maxPrice, 1, 2)}">0</span>
+                    </div>
+                    <div style="font-size: 11px; color: #007600; margin-top: 6px;">
+                        ✓ <span th:text="${stat.totalSold}">0</span> sold
+                    </div>
+                </a>
+            </div>
+        </div>
+        
         <div class="products-grid" th:if="${products != null and !products.isEmpty()}">
             <div class="product-card" th:each="product : ${products}">
                 <img th:src="${product.imageUrl}" 
