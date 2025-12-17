@@ -8,8 +8,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.aerloki.personal.project.Personal.Project.model.Product;
+import com.aerloki.personal.project.Personal.Project.model.Seller;
 import com.aerloki.personal.project.Personal.Project.model.User;
 import com.aerloki.personal.project.Personal.Project.repository.ProductRepository;
+import com.aerloki.personal.project.Personal.Project.repository.SellerRepository;
 import com.aerloki.personal.project.Personal.Project.repository.UserRepository;
 
 @Configuration
@@ -18,6 +20,7 @@ public class DataInitializer {
     @Bean
     CommandLineRunner initDatabase(ProductRepository productRepository, 
                                    UserRepository userRepository,
+                                   SellerRepository sellerRepository,
                                    PasswordEncoder passwordEncoder) {
         return args -> {
             // Create fake users with encoded passwords
@@ -32,6 +35,17 @@ public class DataInitializer {
                         passwordEncoder.encode("password123"), 
                         "789 Pine Rd, San Francisco, CA", "415-555-0300"));
                 System.out.println("✓ Created 3 test users with encoded passwords");
+            }
+            
+            // Create seller accounts
+            if (sellerRepository.count() == 0) {
+                sellerRepository.save(new Seller(null, "seller@example.com", "Amazon Store",
+                        passwordEncoder.encode("seller123"),
+                        "Amazon HQ, Seattle, WA", "800-555-0100", "Official Amazon seller account"));
+                sellerRepository.save(new Seller(null, "merchant@example.com", "Merchant Store",
+                        passwordEncoder.encode("merchant123"),
+                        "456 Commerce Blvd, San Jose, CA", "408-555-0500", "Third-party merchant store"));
+                System.out.println("✓ Created 2 test sellers with encoded passwords");
             }
             
             // Create fake products with ASINs

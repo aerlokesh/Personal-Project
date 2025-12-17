@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seller Registration - Amazon</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Amazon Ember', Arial, sans-serif;
+            background: linear-gradient(to bottom, white 0%, white 50%, #f0f2f2 50%, #f0f2f2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .header {
+            padding: 20px;
+            text-align: center;
+            background: white;
+        }
+        
+        .logo {
+            font-size: 32px;
+            font-weight: bold;
+            color: #131921;
+            text-decoration: none;
+        }
+        
+        .logo span {
+            color: #FF9900;
+        }
+        
+        .container {
+            max-width: 450px;
+            margin: 20px auto;
+            background: white;
+            border: 1px solid #DDD;
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            font-size: 28px;
+            font-weight: 400;
+            color: #0F1111;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            font-size: 14px;
+            color: #565959;
+            margin-bottom: 20px;
+        }
+        
+        .alert {
+            padding: 12px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            font-size: 13px;
+        }
+        
+        .alert-error {
+            background-color: #FEF5E7;
+            border: 1px solid #F39C12;
+            color: #7D4F00;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            font-size: 13px;
+            font-weight: bold;
+            color: #0F1111;
+            margin-bottom: 5px;
+        }
+        
+        input[type="text"],
+        input[type="email"],
+        input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #A6A6A6;
+            border-radius: 3px;
+            font-size: 14px;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        
+        input:focus {
+            outline: none;
+            border-color: #E77600;
+            box-shadow: 0 0 3px 2px rgba(228, 121, 17, 0.5);
+        }
+        
+        .input-hint {
+            font-size: 12px;
+            color: #565959;
+            margin-top: 5px;
+        }
+        
+        .submit-button {
+            width: 100%;
+            padding: 10px;
+            background: linear-gradient(to bottom, #F7DFA5, #F0C14B);
+            border: 1px solid #A88734;
+            border-radius: 3px;
+            color: #111;
+            font-size: 14px;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: background 0.2s;
+        }
+        
+        .submit-button:hover {
+            background: linear-gradient(to bottom, #F5D78E, #EDB930);
+        }
+        
+        .divider {
+            text-align: center;
+            position: relative;
+            margin: 25px 0;
+        }
+        
+        .divider::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 50%;
+            height: 1px;
+            background: #E7E7E7;
+        }
+        
+        .divider span {
+            background: white;
+            padding: 0 10px;
+            position: relative;
+            font-size: 12px;
+            color: #767676;
+        }
+        
+        .signin-link {
+            text-align: center;
+            font-size: 13px;
+            color: #565959;
+            margin-top: 20px;
+        }
+        
+        .signin-link a {
+            color: #0066C0;
+            text-decoration: none;
+        }
+        
+        .signin-link a:hover {
+            color: #C7511F;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <a href="/" class="logo">amazon<span>.com</span></a>
+    </div>
+    
+    <div class="container">
+        <h1>Seller Registration</h1>
+        <div class="subtitle">Start selling on Amazon today</div>
+        
+        <div class="alert alert-error" th:if="${error}">
+            <strong>⚠️</strong> <span th:text="${error}"></span>
+        </div>
+        
+        <form action="/seller/signup" method="post">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+            
+            <div class="form-group">
+                <label for="businessName">Business Name</label>
+                <input type="text" id="businessName" name="businessName" placeholder="Your business or store name" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" placeholder="seller@example.com" required>
+                <div class="input-hint">We'll use this for seller account communications</div>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" minlength="6" required>
+                <div class="input-hint">Passwords must be at least 6 characters</div>
+            </div>
+            
+            <div class="form-group">
+                <label for="confirmPassword">Re-enter password</label>
+                <input type="password" id="confirmPassword" name="confirmPassword" minlength="6" required>
+            </div>
+            
+            <button type="submit" class="submit-button">Create Seller Account</button>
+        </form>
+        
+        <div class="divider">
+            <span>Already have a seller account?</span>
+        </div>
+        
+        <div class="signin-link">
+            <a href="/seller/signin">Sign in as seller ›</a>
+        </div>
+        
+        <div class="divider">
+            <span>Want to shop instead?</span>
+        </div>
+        
+        <div class="signin-link">
+            <a href="/signup">Create customer account ›</a>
+        </div>
+    </div>
+</body>
+</html>

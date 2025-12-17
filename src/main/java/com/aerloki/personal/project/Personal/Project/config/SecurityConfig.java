@@ -18,8 +18,8 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
             .authorizeHttpRequests(authorize -> authorize
-                .requestMatchers("/", "/signup", "/signin", "/verify-otp", "/css/**", "/js/**", "/images/**", "/api/products/**", "/metrics/**", "/actuator/**").permitAll()
-                .requestMatchers("/cart/**", "/checkout/**", "/orders/**").authenticated()
+                .requestMatchers("/", "/signup", "/signin", "/verify-otp", "/seller/signup", "/seller/signin", "/css/**", "/js/**", "/images/**", "/api/products/**", "/metrics/**", "/actuator/**").permitAll()
+                .requestMatchers("/cart/**", "/checkout/**", "/orders/**", "/seller/dashboard", "/seller/products/**", "/api/seller/**").authenticated()
                 .anyRequest().authenticated()
             )
             .formLogin(form -> form
@@ -34,7 +34,7 @@ public class SecurityConfig {
                 .permitAll()
             )
             .csrf(csrf -> csrf
-                .ignoringRequestMatchers("/api/**")
+                .ignoringRequestMatchers("/api/**", "/seller/products/**")
             );
         
         return http.build();

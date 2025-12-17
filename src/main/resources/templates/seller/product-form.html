@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${isEdit ? 'Edit Product' : 'Add New Product'}">Add Product</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .header-content {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-size: 28px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .form-card {
+            background: white;
+            padding: 35px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        .required {
+            color: #f44336;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+            font-family: 'Arial', sans-serif;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .form-group textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .form-group small {
+            display: block;
+            margin-top: 5px;
+            color: #666;
+            font-size: 12px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: auto;
+            cursor: pointer;
+        }
+
+        .checkbox-group label {
+            margin: 0;
+            cursor: pointer;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #45a049;
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+
+        .alert {
+            padding: 15px 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+        .alert-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .form-actions {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+        
+        .upload-progress {
+            display: none;
+            margin-top: 10px;
+            padding: 10px;
+            background: #e3f2fd;
+            border-radius: 5px;
+            color: #1976d2;
+        }
+        
+        .upload-success {
+            color: #4caf50;
+            font-weight: bold;
+        }
+        
+        .upload-error {
+            color: #f44336;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <h1 th:text="${isEdit ? '✏️ Edit Product' : '➕ Add New Product'}">Add Product</h1>
+        </div>
+    </div>
+
+    <div class="container">
+        <div th:if="${errorMessage}" class="alert alert-error">
+            ✗ <span th:text="${errorMessage}"></span>
+        </div>
+
+        <div class="form-card">
+            <form th:action="${isEdit ? '/seller/products/edit/' + productId : '/seller/products/add'}" 
+                  method="post" 
+                  th:object="${productForm}"
+                  enctype="multipart/form-data">
+                
+                <div class="form-group">
+                    <label for="asin">ASIN <span class="required">*</span></label>
+                    <input type="text" 
+                           id="asin" 
+                           th:field="*{asin}" 
+                           required 
+                           maxlength="20"
+                           placeholder="e.g., B08N5WRWNW">
+                    <small>Amazon Standard Identification Number - must be unique</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="name">Product Name <span class="required">*</span></label>
+                    <input type="text" 
+                           id="name" 
+                           th:field="*{name}" 
+                           required 
+                           maxlength="255"
+                           placeholder="e.g., Echo Dot (4th Gen)">
+                </div>
+
+                <div class="form-group">
+                    <label for="description">Description</label>
+                    <textarea id="description" 
+                              th:field="*{description}" 
+                              maxlength="2000"
+                              placeholder="Enter a detailed product description..."></textarea>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="price">Price <span class="required">*</span></label>
+                        <input type="number" 
+                               id="price" 
+                               th:field="*{price}" 
+                               required 
+                               step="0.01" 
+                               min="0"
+                               placeholder="49.99">
+                        <small>Enter price in dollars (e.g., 49.99)</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="stock">Stock Quantity <span class="required">*</span></label>
+                        <input type="number" 
+                               id="stock" 
+                               th:field="*{stock}" 
+                               required 
+                               min="0"
+                               placeholder="100">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="category">Category</label>
+                    <select id="category" th:field="*{category}">
+                        <option value="">Select a category</option>
+                        <option value="Electronics">Electronics</option>
+                        <option value="Books">Books</option>
+                        <option value="Home & Kitchen">Home & Kitchen</option>
+                        <option value="Sports & Outdoors">Sports & Outdoors</option>
+                        <option value="Fashion">Fashion</option>
+                        <option value="Beauty & Personal Care">Beauty & Personal Care</option>
+                        <option value="Gaming">Gaming</option>
+                        <option value="Toys & Games">Toys & Games</option>
+                        <option value="Pet Supplies">Pet Supplies</option>
+                        <option value="Tools & Home Improvement">Tools & Home Improvement</option>
+                        <option value="Automotive">Automotive</option>
+                        <option value="Office Products">Office Products</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="imageFile">Upload Product Image</label>
+                    <input type="file" 
+                           id="imageFile" 
+                           accept="image/*"
+                           onchange="uploadImage()"
+                           style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-size: 14px;">
+                    <div id="uploadProgress" class="upload-progress">Uploading...</div>
+                    <small>Upload an image file (JPG, PNG, SVG, etc.) - will be stored in LocalStack S3</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="imageUrl">Image URL</label>
+                    <input type="url" 
+                           id="imageUrl" 
+                           th:field="*{imageUrl}" 
+                           readonly
+                           placeholder="Upload an image or enter URL manually">
+                    <small>Image URL will be filled automatically after upload, or enter manually</small>
+                </div>
+
+                <div class="form-group">
+                    <div class="checkbox-group">
+                        <input type="checkbox" 
+                               id="available" 
+                               th:field="*{available}">
+                        <label for="available">Product is available for purchase</label>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">
+                        <span th:text="${isEdit ? 'Update Product' : 'Add Product'}">Add Product</span>
+                    </button>
+                    <a href="/seller/dashboard" class="btn btn-secondary">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <script>
+        function uploadImage() {
+            const fileInput = document.getElementById('imageFile');
+            const imageUrlInput = document.getElementById('imageUrl');
+            const progressDiv = document.getElementById('uploadProgress');
+            
+            if (!fileInput.files || fileInput.files.length === 0) {
+                return;
+            }
+            
+            const file = fileInput.files[0];
+            const formData = new FormData();
+            formData.append('image', file);
+            
+            // Show progress
+            progressDiv.style.display = 'block';
+            progressDiv.className = 'upload-progress';
+            progressDiv.textContent = 'Uploading...';
+            
+            // Upload via AJAX
+            fetch('/api/seller/upload-image', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success && data.imageUrl) {
+                    imageUrlInput.value = data.imageUrl;
+                    imageUrlInput.readOnly = false;
+                    progressDiv.className = 'upload-progress upload-success';
+                    progressDiv.textContent = '✓ Image uploaded successfully!';
+                    setTimeout(() => {
+                        progressDiv.style.display = 'none';
+                    }, 3000);
+                } else {
+                    progressDiv.className = 'upload-progress upload-error';
+                    progressDiv.textContent = '✗ Upload failed: ' + (data.error || 'Unknown error');
+                }
+            })
+            .catch(error => {
+                progressDiv.className = 'upload-progress upload-error';
+                progressDiv.textContent = '✗ Upload failed: ' + error.message;
+            });
+        }
+    </script>
+</body>
+</html>
